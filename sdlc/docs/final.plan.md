@@ -56,20 +56,19 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 00.1 | Open | | | Initialize Astro project with static output adapter and TypeScript config. Install `astro` and `sharp`. Create `astro.config.mjs` with `site` and `base` settings (PDR Section 1.3). |
-| 00.2 | Open | | | Create `src/config.ts` with `repoName`, `repoUrl`, `creatorName`, `creatorGithub`, `siteTitle`, and `siteDescription` variables (PDR Section 1.3). |
-| 00.3 | Open | | | Create minimal placeholder homepage at `src/pages/index.astro` that renders the site title, one paragraph, and a link generated from `src/config.ts` to verify config propagation. |
-| 00.4 | Open | | | Create GitHub Actions workflow at `.github/workflows/deploy.yml` for building Astro and deploying to GitHub Pages on push to main (PDR Section 1.2, NFR-008). |
-| 00.5 | Open | | | Test `base` path configuration: verify build succeeds with `base: "/"` and with `base: "/test-repo"`. Verify internal links and asset paths resolve correctly in both cases (PDR Risk 3). |
-| 00.6 | Open | | | Verify `npm run build` produces a directory of static HTML with no server-side dependencies (PDR-AC-001). Verify changing `repoName` and rebuilding updates the GitHub link on the placeholder page (PDR-AC-003). |
-| 00.7 | Open | | | Deploy to GitHub Pages and verify the site is accessible at the expected URL (PDR-AC-002). |
+| 00.1 | Completed | 2026-05-21 03:45 PM | 2026-05-21 03:48 PM | Initialize Astro project with static output adapter and TypeScript config. Install `astro` and `sharp`. Create `astro.config.mjs` with `site` and `base` settings (PDR Section 1.3). |
+| 00.2 | Completed | 2026-05-21 03:48 PM | 2026-05-21 03:49 PM | Create `src/config.ts` with `repoName`, `repoUrl`, `creatorName`, `creatorGithub`, `siteTitle`, and `siteDescription` variables (PDR Section 1.3). |
+| 00.3 | Completed | 2026-05-21 03:49 PM | 2026-05-21 03:49 PM | Create minimal placeholder homepage at `src/pages/index.astro` that renders the site title, one paragraph, and a link generated from `src/config.ts` to verify config propagation. |
+| 00.4 | Completed | 2026-05-21 03:50 PM | 2026-05-21 03:50 PM | Create GitHub Actions workflow at `.github/workflows/deploy.yml` for building Astro and deploying to GitHub Pages on push to main (PDR Section 1.2, NFR-008). |
+| 00.5 | Completed | 2026-05-21 03:50 PM | 2026-05-21 03:51 PM | Test `base` path configuration: verify build succeeds with `base: "/"` and with `base: "/test-repo"`. Verify internal links and asset paths resolve correctly in both cases (PDR Risk 3). |
+| 00.6 | Completed | 2026-05-21 03:51 PM | 2026-05-21 03:52 PM | Verify `npm run build` produces a directory of static HTML with no server-side dependencies (PDR-AC-001). Verify changing `repoName` and rebuilding updates the GitHub link on the placeholder page (PDR-AC-003). |
+| 00.7 | Blocked | 2026-05-21 03:52 PM | | Deploy to GitHub Pages and verify the site is accessible at the expected URL (PDR-AC-002). [BLOCKED: No GitHub remote repository configured yet; deployment requires push to a remote repo with GitHub Pages enabled] |
 
 ### Phase 00 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `package.json`, `astro.config.mjs`, `tsconfig.json`, `src/config.ts`, `src/pages/index.astro`, `.github/workflows/deploy.yml`. Verified static build produces only HTML (no server code). Verified `base` path works with both `/` and `/test-repo`. Verified `repoName` config propagation to built output.
+- **Blocked tasks:** 00.7 — no GitHub remote repository configured yet; deployment verification deferred.
+- **Commit:** `Phase 00: Project scaffold — Astro init, config system, GitHub Actions workflow`
 
 ---
 

@@ -1,0 +1,17 @@
+---
+import { siteTitle, siteDescription, repoUrl } from '../config';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteTitle}</title>
+    <meta name="description" content={siteDescription} />
+  </head>
+  <body>
+    <h1>{siteTitle}</h1>
+    <p>{siteDescription}</p>
+    <p><a href={repoUrl}>View on GitHub</a></p>
+  </body>
+</html>
