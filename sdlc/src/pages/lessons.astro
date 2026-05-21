@@ -1,0 +1,74 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+---
+
+<ContentLayout title="Lessons Learned" description="Reusable patterns and insights extracted from the SDLC prompt pipeline project.">
+  <h1>Lessons Learned</h1>
+  <p>Reusable patterns and insights extracted from building and using the SDLC prompt pipeline. Each lesson captures a decision, pattern, or mistake and is written so a developer on a different project can understand and apply it.</p>
+
+  <h2>Architecture &amp; Design</h2>
+  <ul class="lesson-list">
+    <li>
+      <strong>Prompt Pipeline as Product</strong>
+      <p>Treating AI prompts as versioned software with I/O contracts and dispatch routing.</p>
+    </li>
+    <li>
+      <strong>Document Cascade Architecture</strong>
+      <p>Sequential document generation with explicit gap surfacing over silent interpolation.</p>
+    </li>
+    <li>
+      <strong>Content Collections for Structured Docs</strong>
+      <p>When schema-validated content collections pay off vs. plain HTML.</p>
+    </li>
+  </ul>
+
+  <h2>Process &amp; Methodology</h2>
+  <ul class="lesson-list">
+    <li>
+      <strong>Phased Implementation with Plan-as-State</strong>
+      <p>Using markdown plan tables as the task state machine with timestamp audit trails.</p>
+    </li>
+    <li>
+      <strong>Draft-to-Final Document Pipeline</strong>
+      <p>Separating intent capture from quality gates with structured gap analysis between stages.</p>
+    </li>
+    <li>
+      <strong>Scaffold-First Static Sites</strong>
+      <p>Proving deployment works with zero content before investing in features.</p>
+    </li>
+  </ul>
+
+  <h2>Meta</h2>
+  <ul class="lesson-list">
+    <li>
+      <strong>Self-Documenting Product via Dogfooding</strong>
+      <p>Building a product's site using the product itself: benefits, risks, and circular-reasoning traps.</p>
+    </li>
+  </ul>
+</ContentLayout>
+
+<style>
+  .lesson-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 2rem;
+  }
+
+  .lesson-list li {
+    border-left: 3px solid var(--color-accent);
+    padding: 0.5rem 0 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .lesson-list li strong {
+    display: block;
+    color: var(--color-heading);
+    font-size: 1.05rem;
+  }
+
+  .lesson-list li p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+</style>

@@ -6,7 +6,7 @@ source: "sdlc/docs/draft.plan.md"
 pdr: "sdlc/docs/final.pdr.md"
 user_requirements: "sdlc/docs/final.user.md"
 finalized_date: "2026-05-21"
-total_phases: 6
+total_phases: 7
 ---
 
 # I2I — From Idea to Implementation — Implementation Plan
@@ -204,6 +204,37 @@ _To be filled after completion._
 
 ---
 
+## Phase 10: Design Refresh — Visual Identity and Marketing Clarity
+
+**Goal:** The site has a distinctive visual identity (dark slate/accent color theme), a compelling hero section, clickable workflow stage cards, a Without/With comparison table, and sharper marketing copy. The site feels like a polished technical product, not a README rendered as pages.
+**Depends on:** Phase 04 (all content pages exist).
+**Source:** `sdlc/docs/first-review-feedback.md`
+**User stories:** US-001, US-002, US-003, US-004
+
+| No | Status | Started (PST) | Completed (PST) | Description |
+|----|--------|---------------|------------------|-------------|
+| 10.1 | Open | | | Redesign `src/styles/global.css`: deep slate/off-white palette, electric blue accent, modern sans-serif, increased spacing, card/shadow utilities. Preserve 4.5:1 contrast (NFR-004). |
+| 10.2 | Open | | | Redesign hero section in `src/pages/index.astro`: bold title, subtitle, three CTA buttons (Explore Workflow, View Artifacts, Case Study). |
+| 10.3 | Open | | | Add "Without I2I / With I2I" comparison section to homepage: two-column table contrasting vague vs. structured approaches. |
+| 10.4 | Open | | | Add problem/solution messaging block to homepage: "Most AI coding failures start before code is written" → "I2I creates durable SDLC artifacts before implementation begins." |
+| 10.5 | Open | | | Redesign WorkflowDiagram as clickable stage cards: 7 cards with descriptions, links to /workflow/, hover states, accent borders. |
+| 10.6 | Open | | | Add "Human-in-the-loop" trust section to homepage after comparison. |
+| 10.7 | Open | | | Redesign CommandCard to match new visual identity: dark card, accent border, shadow on hover. |
+| 10.8 | Open | | | Update Nav to match new palette: dark background, light text, accent active indicator. |
+| 10.9 | Open | | | Update Footer to match new palette: dark background, subtle top border, light text. |
+| 10.10 | Open | | | Restructure portfolio page as "What This Project Demonstrates" with skill bullets. |
+| 10.11 | Open | | | Update artifacts page and ArtifactExample with code-document card styling. |
+| 10.12 | Open | | | Full visual QA: all 7 pages at 320/768/1440px, no-JS readability, contrast ratios. |
+
+### Phase 10 Summary
+
+_To be filled after completion._
+
+- **Changes:** TBD
+- **Commit:** TBD
+
+---
+
 ## Cross-Phase Requirements
 
 These apply to every phase and must be verified before marking a phase complete:
@@ -265,3 +296,11 @@ _Every component and asset in the PDR must appear in at least one phase task._
 | 14 | PDR-AC-006 (no-JS readable) | 01 | 01.10 |
 | 14 | PDR-AC-007 (Lighthouse >= 90) | 05 | 05.7 |
 | 14 | PDR-AC-008 (custom domain ready) | 05 | 05.9 |
+| 12 | UI Principles (visual identity) | 10 | 10.1 |
+| 4.5 | WorkflowDiagram redesign | 10 | 10.5 |
+| 4.6 | CommandCard redesign | 10 | 10.7 |
+| 4.3 | Nav palette update | 10 | 10.8 |
+| 4.4 | Footer palette update | 10 | 10.9 |
+| 5 | Homepage redesign (hero, CTAs) | 10 | 10.2 |
+| 5 | Portfolio restructure | 10 | 10.10 |
+| 5 | Artifacts styling | 10 | 10.11 |
