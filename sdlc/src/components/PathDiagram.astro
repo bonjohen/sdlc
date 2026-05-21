@@ -1,0 +1,149 @@
+---
+// Self-contained path diagram — no props needed
+---
+
+<div class="path-diagram">
+  <h3>Three Workflow Paths</h3>
+
+  <div class="path-row">
+    <div class="path-name">Conversation path</div>
+    <div class="path-steps">
+      <span class="step conv">draft-user</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step conv">draft-pdr</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step conv">draft-plan</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">finalize</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">expand</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">implement</span>
+    </div>
+    <p class="path-desc">Have a conversation about each stage, then format it into a document. The most thorough path — every decision is discussed before being captured.</p>
+  </div>
+
+  <div class="path-row">
+    <div class="path-name">Fast path</div>
+    <div class="path-steps">
+      <span class="step conv">draft-user</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step doc">gen-pdr</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step doc">gen-plan</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">finalize</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">expand</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">implement</span>
+    </div>
+    <p class="path-desc">Conversation for user requirements only. The PDR and plan are generated directly from documents — faster, but the AI makes more design decisions autonomously.</p>
+  </div>
+
+  <div class="path-row">
+    <div class="path-name">Mixed path</div>
+    <div class="path-steps">
+      <span class="step conv">draft-user</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step mixed">draft or gen</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step mixed">draft or gen</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">finalize</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">expand</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step shared">implement</span>
+    </div>
+    <p class="path-desc">Any combination — conversation for requirements, generated PDR, conversation for plan, or vice versa. Use conversation for decisions you want to control and generation for the rest.</p>
+  </div>
+</div>
+
+<style>
+  .path-diagram {
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .path-diagram h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .path-row {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .path-row:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .path-name {
+    font-weight: 700;
+    font-size: var(--font-size-base);
+    margin-bottom: 0.5rem;
+    color: var(--color-heading);
+  }
+
+  .path-steps {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .step {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .step.conv {
+    color: #1a56db;
+    border-color: #1a56db;
+    background: #eff6ff;
+  }
+
+  .step.doc {
+    color: #166534;
+    border-color: #166534;
+    background: #f0fdf4;
+  }
+
+  .step.shared {
+    color: var(--color-heading);
+    border-color: var(--color-heading);
+    background: var(--color-bg);
+  }
+
+  .step.mixed {
+    color: #7c3aed;
+    border-color: #7c3aed;
+    background: #f5f3ff;
+  }
+
+  .arrow {
+    color: var(--color-text);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .path-desc {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    margin: 0;
+  }
+</style>

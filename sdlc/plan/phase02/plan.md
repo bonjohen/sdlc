@@ -14,14 +14,14 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 02.1 | Open | | | Define Command content collection schema in `src/content/config.ts`: `name`, `purpose`, `input`, `output`, `path` (enum), `sortOrder` (PDR Section 2.1). |
-| 02.2 | Open | | | Create 8 command content entries in `src/content/commands/` sourced from `skill/*.md` and `skill/SKILL.md` — one `.md` file per command with accurate purpose, input, and output descriptions (PDR Section 2.3). |
-| 02.3 | Open | | | Implement `src/components/CommandCard.astro`: card displaying command name, purpose, input, output, and path badge (PDR Section 4.6). |
-| 02.4 | Open | | | Implement `src/components/PathDiagram.astro`: visual flow showing conversation path, fast path, and mixed path with their respective command sequences (PDR Section 4.7). |
-| 02.5 | Open | | | Build workflow page at `src/pages/workflow.astro` using ContentLayout: heading "The SDLC Pipeline", stage-by-stage explanation, CommandCard components in pipeline order, PathDiagram, sections on what finalize/expand/implement produce (PDR Section 5 Workflow). |
-| 02.6 | Open | | | Add workflow page to Nav component page list with `navOrder: 2` and label "Workflow". |
-| 02.7 | Open | | | Spot-check accessibility: verify heading hierarchy (`h1` > `h2` > `h3`), color contrast on command cards, keyboard focus order through cards (NFR-003). |
-| 02.8 | Open | | | Verify all 8 command descriptions are accurate by comparing each content entry against the corresponding `skill/*.md` file header and behavior. |
+| 02.1 | Completed | 2026-05-21 04:07 PM | 2026-05-21 04:08 PM | Define Command content collection schema in `src/content/config.ts`: `name`, `purpose`, `input`, `output`, `path` (enum), `sortOrder` (PDR Section 2.1). |
+| 02.2 | Completed | 2026-05-21 04:08 PM | 2026-05-21 04:10 PM | Create 8 command content entries in `src/content/commands/` sourced from `skill/*.md` and `skill/SKILL.md` — one `.md` file per command with accurate purpose, input, and output descriptions (PDR Section 2.3). |
+| 02.3 | Completed | 2026-05-21 04:10 PM | 2026-05-21 04:11 PM | Implement `src/components/CommandCard.astro`: card displaying command name, purpose, input, output, and path badge (PDR Section 4.6). |
+| 02.4 | Completed | 2026-05-21 04:11 PM | 2026-05-21 04:12 PM | Implement `src/components/PathDiagram.astro`: visual flow showing conversation path, fast path, and mixed path with their respective command sequences (PDR Section 4.7). |
+| 02.5 | Completed | 2026-05-21 04:12 PM | 2026-05-21 04:14 PM | Build workflow page at `src/pages/workflow.astro` using ContentLayout: heading "The SDLC Pipeline", stage-by-stage explanation, CommandCard components in pipeline order, PathDiagram, sections on what finalize/expand/implement produce (PDR Section 5 Workflow). |
+| 02.6 | Completed | 2026-05-21 04:14 PM | 2026-05-21 04:14 PM | Add workflow page to Nav component page list with `navOrder: 2` and label "Workflow". |
+| 02.7 | Completed | 2026-05-21 04:14 PM | 2026-05-21 04:15 PM | Spot-check accessibility: verify heading hierarchy (`h1` > `h2` > `h3`), color contrast on command cards, keyboard focus order through cards (NFR-003). |
+| 02.8 | Completed | 2026-05-21 04:15 PM | 2026-05-21 04:15 PM | Verify all 8 command descriptions are accurate by comparing each content entry against the corresponding `skill/*.md` file header and behavior. |
 
 ## Context
 
@@ -200,7 +200,5 @@ const sortedCommands = commands.sort((a, b) => a.data.sortOrder - b.data.sortOrd
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `src/content/config.ts` (Command collection schema), 8 command entries in `src/content/commands/`, `src/components/CommandCard.astro`, `src/components/PathDiagram.astro`, `src/pages/workflow.astro`. Workflow page shows all 8 commands with path badges, three workflow paths diagram, and explanation of finalize/expand/implement stages.
+- **Commit:** `Phase 02: Workflow and command pages — content collections, CommandCard, PathDiagram, workflow page`

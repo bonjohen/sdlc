@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import CommandCard from '../components/CommandCard.astro';
+import PathDiagram from '../components/PathDiagram.astro';
+
+const commands = await getCollection('commands');
+const sortedCommands = commands.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+---
+
+<ContentLayout title="The SDLC Pipeline" description="Eight prompt-driven commands that turn a software idea into implementation-ready plans and working code.">
+  <h1>The SDLC Pipeline</h1>
+  <p>Eight structured prompts form a linear pipeline. Each reads prior-stage artifacts and produces the next stage. The pipeline enforces gap surfacing, traceability, and phased execution — turning a software idea into working code through documented stages.</p>
+
+  <h2>Pipeline Commands</h2>
+  <p>Each command has a defined input/output contract. Conversation-path commands format discussion into documents. Document-path commands generate decisions from prior-stage documents.</p>
+
+  {sortedCommands.map(async (cmd) => {
+    const { Content } = await cmd.render();
+    return (
+      <CommandCard
+        name={cmd.data.name}
+        purpose={cmd.data.purpose}
+        input={cmd.data.input}
+        output={cmd.data.output}
+        path={cmd.data.path}
+      >
+        <Content />
+      </CommandCard>
+    );
+  })}
+
+  <h2>Workflow Paths</h2>
+  <p>There are three ways to move through the pipeline. All paths start with conversation-driven user requirements and end with the same finalize/expand/implement sequence.</p>
+
+  <PathDiagram />
+
+  <h2>What Each Stage Produces</h2>
+
+  <h3>Finalize</h3>
+  <p>The <code>finalize</code> command converts three draft documents into three final documents, processed in strict sequence: user requirements first, then PDR, then plan. Each final feeds into the next. It performs gap analysis, adds traceability IDs (US-NNN, NFR-NNN), and flags critical issues — making the documents buildable without rewriting the original vision.</p>
+
+  <h3>Expand</h3>
+  <p>The <code>expand</code> command generates standalone phase execution plans at <code>sdlc/plan/phase&#123;NN&#125;/plan.md</code>. Each phase plan is self-contained: it includes the task table, relevant schema, import paths, design notes, and verification criteria. An implementer can execute a phase without re-reading the full PDR.</p>
+
+  <h3>Implement</h3>
+  <p>The <code>implement</code> command is the execution engine. It reads plan state, finds the next incomplete phase, and works through each task: marking it started, writing code, running verification, and marking it complete with PST timestamps. It updates both the master plan and per-phase plan, writes a phase summary, and commits. It runs in single-phase mode by default, or autonomous mode for end-to-end execution.</p>
+</ContentLayout>
