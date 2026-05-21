@@ -81,23 +81,21 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 01.1 | Open | | | Create `src/styles/global.css` with CSS reset, typography (body text >= 16px), color custom properties with minimum 4.5:1 contrast ratios (NFR-004), and responsive foundation (PDR Section 12). |
-| 01.2 | Open | | | Implement `src/layouts/BaseLayout.astro`: HTML shell with `<title>`, `<meta description>`, Open Graph tags, CSP `<meta>` tag (PDR Section 6), skip-to-content link, and `global.css` import (PDR Section 4.1). |
-| 01.3 | Open | | | Implement `src/components/Nav.astro`: responsive navigation bar with page links sorted by `navOrder`, `aria-current="page"` on active link, CSS-only hamburger toggle below 768px (PDR Section 4.3, NFR-002). |
-| 01.4 | Open | | | Implement `src/components/Footer.astro`: GitHub profile link, repo link (when `repoName` set), creator name, `role="contentinfo"` (PDR Section 4.4). |
-| 01.5 | Open | | | Implement `src/layouts/ContentLayout.astro`: wraps BaseLayout with Nav, `<main id="main-content">`, and Footer (PDR Section 4.2). |
-| 01.6 | Open | | | Implement `src/components/WorkflowDiagram.astro`: HTML/CSS 7-stage pipeline diagram with conversation and document path branches, `role="img"` and `aria-label`, responsive layout (PDR Section 4.5). |
-| 01.7 | Open | | | Build homepage at `src/pages/index.astro` using ContentLayout: project title, tagline, WorkflowDiagram, three CTA links to `/workflow/`, `/artifacts/`, `/portfolio/` (PDR Section 5 Homepage). |
-| 01.8 | Open | | | Test WorkflowDiagram at 320px, 768px, and 1440px viewport widths. If HTML/CSS fails at 320px, switch to static SVG fallback (PDR Risk 1, PDR-AC-005). |
-| 01.9 | Open | | | Spot-check accessibility: verify skip-to-content link works, keyboard can reach all nav links and CTAs, WorkflowDiagram has appropriate ARIA, heading hierarchy is correct (NFR-003). |
-| 01.10 | Open | | | Verify all homepage content is readable with JavaScript disabled (NFR-002, PDR-AC-006). |
+| 01.1 | Completed | 2026-05-21 03:55 PM | 2026-05-21 03:56 PM | Create `src/styles/global.css` with CSS reset, typography (body text >= 16px), color custom properties with minimum 4.5:1 contrast ratios (NFR-004), and responsive foundation (PDR Section 12). |
+| 01.2 | Completed | 2026-05-21 03:56 PM | 2026-05-21 03:57 PM | Implement `src/layouts/BaseLayout.astro`: HTML shell with `<title>`, `<meta description>`, Open Graph tags, CSP `<meta>` tag (PDR Section 6), skip-to-content link, and `global.css` import (PDR Section 4.1). |
+| 01.3 | Completed | 2026-05-21 03:57 PM | 2026-05-21 03:58 PM | Implement `src/components/Nav.astro`: responsive navigation bar with page links sorted by `navOrder`, `aria-current="page"` on active link, CSS-only hamburger toggle below 768px (PDR Section 4.3, NFR-002). |
+| 01.4 | Completed | 2026-05-21 03:58 PM | 2026-05-21 03:59 PM | Implement `src/components/Footer.astro`: GitHub profile link, repo link (when `repoName` set), creator name, `role="contentinfo"` (PDR Section 4.4). |
+| 01.5 | Completed | 2026-05-21 03:59 PM | 2026-05-21 03:59 PM | Implement `src/layouts/ContentLayout.astro`: wraps BaseLayout with Nav, `<main id="main-content">`, and Footer (PDR Section 4.2). |
+| 01.6 | Completed | 2026-05-21 04:00 PM | 2026-05-21 04:02 PM | Implement `src/components/WorkflowDiagram.astro`: HTML/CSS 7-stage pipeline diagram with conversation and document path branches, `role="img"` and `aria-label`, responsive layout (PDR Section 4.5). |
+| 01.7 | Completed | 2026-05-21 04:02 PM | 2026-05-21 04:03 PM | Build homepage at `src/pages/index.astro` using ContentLayout: project title, tagline, WorkflowDiagram, three CTA links to `/workflow/`, `/artifacts/`, `/portfolio/` (PDR Section 5 Homepage). |
+| 01.8 | Completed | 2026-05-21 04:03 PM | 2026-05-21 04:04 PM | Test WorkflowDiagram at 320px, 768px, and 1440px viewport widths. If HTML/CSS fails at 320px, switch to static SVG fallback (PDR Risk 1, PDR-AC-005). |
+| 01.9 | Completed | 2026-05-21 04:04 PM | 2026-05-21 04:05 PM | Spot-check accessibility: verify skip-to-content link works, keyboard can reach all nav links and CTAs, WorkflowDiagram has appropriate ARIA, heading hierarchy is correct (NFR-003). |
+| 01.10 | Completed | 2026-05-21 04:05 PM | 2026-05-21 04:05 PM | Verify all homepage content is readable with JavaScript disabled (NFR-002, PDR-AC-006). |
 
 ### Phase 01 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `src/styles/global.css`, `src/layouts/BaseLayout.astro`, `src/layouts/ContentLayout.astro`, `src/components/Nav.astro`, `src/components/Footer.astro`, `src/components/WorkflowDiagram.astro`. Rebuilt `src/pages/index.astro` using ContentLayout with workflow diagram and 3 CTA cards.
+- **Commit:** `Phase 01: Homepage and core layout — BaseLayout, Nav, Footer, WorkflowDiagram, ContentLayout`
 
 ---
 

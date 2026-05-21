@@ -1,0 +1,38 @@
+---
+import { creatorName, creatorGithub, repoName, repoUrl } from '../config';
+---
+
+<footer role="contentinfo" class="site-footer">
+  <div class="footer-inner">
+    <p>
+      Built by <a href={creatorGithub}>{creatorName}</a>
+      {repoName && (
+        <span> &middot; <a href={repoUrl}>View source</a></span>
+      )}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 1.5rem var(--spacing-page);
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-text);
+  }
+
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .site-footer p {
+    margin: 0;
+  }
+
+  .site-footer a {
+    color: var(--color-link);
+  }
+</style>

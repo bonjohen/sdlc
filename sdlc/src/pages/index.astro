@@ -1,17 +1,70 @@
 ---
-import { siteTitle, siteDescription, repoUrl } from '../config';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import WorkflowDiagram from '../components/WorkflowDiagram.astro';
+import { siteDescription } from '../config';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{siteTitle}</title>
-    <meta name="description" content={siteDescription} />
-  </head>
-  <body>
-    <h1>{siteTitle}</h1>
-    <p>{siteDescription}</p>
-    <p><a href={repoUrl}>View on GitHub</a></p>
-  </body>
-</html>
+<ContentLayout title="Home" description={siteDescription}>
+  <h1>I2I — From Idea to Implementation</h1>
+  <p class="tagline">A prompt-driven SDLC workflow that turns a software idea into implementation-ready plans and working code, through structured document stages.</p>
+
+  <WorkflowDiagram />
+
+  <h2>Explore the Pipeline</h2>
+  <div class="cta-grid">
+    <a href="/workflow/" class="cta-card">
+      <strong>The Workflow</strong>
+      <span>See all 8 SDLC commands and the three workflow paths</span>
+    </a>
+    <a href="/artifacts/" class="cta-card">
+      <strong>Example Artifacts</strong>
+      <span>Real prompts and generated documents from the pipeline</span>
+    </a>
+    <a href="/portfolio/" class="cta-card">
+      <strong>About This Project</strong>
+      <span>What this project demonstrates and who built it</span>
+    </a>
+  </div>
+</ContentLayout>
+
+<style>
+  .tagline {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    max-width: 40rem;
+    margin-bottom: 2rem;
+  }
+
+  .cta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .cta-card {
+    display: block;
+    padding: 1.25rem;
+    border: 2px solid var(--color-border);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: border-color 0.15s;
+  }
+
+  .cta-card:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  .cta-card strong {
+    display: block;
+    font-size: var(--font-size-lg);
+    color: var(--color-accent);
+    margin-bottom: 0.25rem;
+  }
+
+  .cta-card span {
+    font-size: 0.9rem;
+  }
+</style>

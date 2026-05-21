@@ -1,0 +1,154 @@
+---
+import { siteTitle } from '../config';
+
+const pages = [
+  { href: "/", label: "Home", order: 1 },
+  { href: "/workflow/", label: "Workflow", order: 2 },
+  { href: "/why/", label: "Why Stages?", order: 3 },
+  { href: "/getting-started/", label: "Getting Started", order: 4 },
+  { href: "/portfolio/", label: "Portfolio", order: 5 },
+  { href: "/artifacts/", label: "Artifacts", order: 6 },
+].sort((a, b) => a.order - b.order);
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === "/") return currentPath === "/" || currentPath === "/index.html";
+  return currentPath.startsWith(href);
+}
+---
+
+<nav aria-label="Main navigation" class="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">{siteTitle}</a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle-input" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+      <span class="hamburger"></span>
+    </label>
+    <ul class="nav-links">
+      {pages.map((page) => (
+        <li>
+          <a
+            href={page.href}
+            aria-current={isActive(page.href) ? "page" : undefined}
+          >
+            {page.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .site-nav {
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-page);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 3.5rem;
+  }
+
+  .nav-brand {
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: var(--color-heading);
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .nav-brand:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-toggle-input {
+    display: none;
+  }
+
+  .nav-toggle-label {
+    display: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .hamburger {
+    display: block;
+    width: 1.5rem;
+    height: 2px;
+    background: var(--color-text);
+    position: relative;
+  }
+
+  .hamburger::before,
+  .hamburger::after {
+    content: "";
+    display: block;
+    width: 1.5rem;
+    height: 2px;
+    background: var(--color-text);
+    position: absolute;
+    left: 0;
+  }
+
+  .hamburger::before {
+    top: -6px;
+  }
+
+  .hamburger::after {
+    top: 6px;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .nav-links a:hover {
+    background: var(--color-bg-alt);
+    color: var(--color-accent);
+  }
+
+  .nav-links a[aria-current="page"] {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .nav-toggle-label {
+      display: block;
+    }
+
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      padding: 0.5rem 0;
+    }
+
+    .nav-toggle-input:checked ~ .nav-links {
+      display: flex;
+    }
+  }
+</style>
