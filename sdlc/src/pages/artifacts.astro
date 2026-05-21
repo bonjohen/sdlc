@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import ArtifactExample from '../components/ArtifactExample.astro';
+
+const artifacts = await getCollection('artifacts');
+const sorted = artifacts.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+---
+
+<ContentLayout title="Example Artifacts" description="Real prompts and generated documents from the SDLC pipeline.">
+  <h1>Example Artifacts</h1>
+  <p>These are real excerpts from the SDLC pipeline — actual prompt text and generated document fragments from this project. They show what the pipeline produces at each stage.</p>
+
+  {sorted.map(async (artifact) => {
+    const { Content } = await artifact.render();
+    return (
+      <ArtifactExample
+        title={artifact.data.title}
+        type={artifact.data.type}
+        command={artifact.data.command}
+        excerpt={artifact.data.excerpt}
+      >
+        <Content />
+      </ArtifactExample>
+    );
+  })}
+</ContentLayout>

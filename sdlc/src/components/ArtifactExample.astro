@@ -1,0 +1,96 @@
+---
+interface Props {
+  title: string;
+  type: "prompt" | "generated";
+  command?: string;
+  excerpt: boolean;
+}
+
+const { title, type, command, excerpt } = Astro.props;
+
+const typeLabel = type === "prompt" ? "Prompt" : "Generated Document";
+---
+
+<article class="artifact-example">
+  <header class="artifact-header">
+    <h3>{title}</h3>
+    <span class="type-badge" data-type={type}>{typeLabel}</span>
+    {command && <span class="command-label">from <code>{command}</code></span>}
+  </header>
+  <div class="artifact-content">
+    <slot />
+  </div>
+  {excerpt && (
+    <p class="excerpt-note">
+      <em>This is an excerpt. See the full document in the repository.</em>
+    </p>
+  )}
+</article>
+
+<style>
+  .artifact-example {
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background: var(--color-bg);
+  }
+
+  .artifact-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+
+  .artifact-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+
+  .type-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1rem;
+    border: 1px solid;
+  }
+
+  .type-badge[data-type="prompt"] {
+    color: #1a56db;
+    border-color: #1a56db;
+    background: #eff6ff;
+  }
+
+  .type-badge[data-type="generated"] {
+    color: #166534;
+    border-color: #166534;
+    background: #f0fdf4;
+  }
+
+  .command-label {
+    font-size: 0.85rem;
+    color: var(--color-text);
+  }
+
+  .artifact-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .artifact-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .excerpt-note {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    opacity: 0.7;
+  }
+</style>

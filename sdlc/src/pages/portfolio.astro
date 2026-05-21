@@ -1,0 +1,32 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+import { creatorName, creatorGithub, repoName, repoUrl } from '../config';
+---
+
+<ContentLayout title="About This Project" description="What the I2I project demonstrates: AI workflow design, SDLC methodology, documentation practice, and software planning.">
+  <h1>About This Project</h1>
+
+  <h2>What This Project Demonstrates</h2>
+  <p>I2I is a prompt-driven software development lifecycle. It is both a set of tools and a demonstration of how those tools work. The project demonstrates four areas of competency:</p>
+  <ul>
+    <li><strong>AI workflow design</strong> — Eight structured prompts guide an AI through a multi-stage process with defined inputs, outputs, and contracts between stages. Each prompt constrains the AI to extract and structure rather than invent, keeping the human in control of decisions.</li>
+    <li><strong>SDLC methodology</strong> — The pipeline applies formal software engineering discipline to AI-assisted development: requirements gathering, physical design review, phased release planning, and verified implementation.</li>
+    <li><strong>Documentation practice</strong> — Every stage produces a document with cross-references and traceability IDs. User stories trace to design decisions trace to implementation tasks. Nothing exists without a traceable origin.</li>
+    <li><strong>Software planning</strong> — The plan phase breaks work into risk-ordered, dependency-aware phases. Each phase is independently shippable and ends in a working state. One commit per phase creates a clean project history.</li>
+  </ul>
+
+  <h2>How It Was Built</h2>
+  <p>This website was built using the same SDLC pipeline it explains. The user requirements were gathered through conversation, the physical design was reviewed, the implementation was planned in phases, and each phase was executed with task tracking and verification.</p>
+  <p>The pipeline is not theoretical — the <code>sdlc/docs/</code> directory contains the actual requirements, design, and plan documents that produced this site. The <code>sdlc/plan/</code> directory contains the per-phase execution plans with timestamps showing when each task was started and completed.</p>
+
+  <h2>The Approach</h2>
+  <p>AI-assisted development works best with structure. Without it, AI coding tools produce inconsistent results — they make different architectural choices in different sessions, miss edge cases, and lose context across long implementations.</p>
+  <p>This workflow provides that structure. The human sets direction through conversation and reviews each document before it moves to the next stage. The AI handles volume: formatting conversations into documents, generating design decisions from requirements, expanding plans into executable tasks, and implementing code from phase plans.</p>
+  <p>The result is a human-in-the-loop process where every decision is traceable and every output is verifiable. The pipeline does not claim full automation — it is explicitly AI-assisted, with human review at every stage transition.</p>
+
+  <h2>Links</h2>
+  <ul>
+    <li><a href={creatorGithub}>{creatorName} on GitHub</a></li>
+    {repoName && <li><a href={repoUrl}>Project repository</a></li>}
+  </ul>
+</ContentLayout>

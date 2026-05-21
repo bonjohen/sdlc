@@ -157,21 +157,19 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 04.1 | Open | | | Build portfolio page at `src/pages/portfolio.astro` using ContentLayout: heading "About This Project", what the project demonstrates (AI workflow design, SDLC methodology, documentation, planning), creator's role, links to `github.com/bonjohen` and repo (when named) (PDR Section 5 Portfolio). |
-| 04.2 | Open | | | Review portfolio page content for tone: claims must be credible, technical, and specific. No boilerplate, no exaggerated claims. Verify human-in-the-loop framing (Constraint: human-in-the-loop framing). |
-| 04.3 | Open | | | Add Artifact content collection schema to `src/content/config.ts`: `title`, `type` (enum: prompt/generated), `command` (optional), `excerpt` (boolean), `sortOrder` (PDR Section 2.1). |
-| 04.4 | Open | | | Create artifact content entries in `src/content/artifacts/` from actual SDLC files: at least one prompt excerpt (from `skill/*.md`) and at least one generated document excerpt (from `sdlc/docs/*.md`) (PDR Section 2.3). |
-| 04.5 | Open | | | Implement `src/components/ArtifactExample.astro`: styled block with title, type badge ("Prompt" or "Generated Document"), optional command label, rendered markdown content, excerpt note when applicable (PDR Section 4.8). |
-| 04.6 | Open | | | Build artifacts page at `src/pages/artifacts.astro` using ContentLayout: heading "Example Artifacts", ArtifactExample components for each artifact entry, labeled by type and command (PDR Section 5 Artifacts). |
-| 04.7 | Open | | | Add both pages to Nav: Portfolio at `navOrder: 5` with label "Portfolio", Artifacts at `navOrder: 6` with label "Artifacts". |
-| 04.8 | Open | | | Spot-check accessibility: heading hierarchy, code block readability, artifact type badges have sufficient contrast, all links have descriptive text (NFR-003). |
+| 04.1 | Completed | 2026-05-21 04:22 PM | 2026-05-21 04:24 PM | Build portfolio page at `src/pages/portfolio.astro` using ContentLayout: heading "About This Project", what the project demonstrates (AI workflow design, SDLC methodology, documentation, planning), creator's role, links to `github.com/bonjohen` and repo (when named) (PDR Section 5 Portfolio). |
+| 04.2 | Completed | 2026-05-21 04:24 PM | 2026-05-21 04:25 PM | Review portfolio page content for tone: claims must be credible, technical, and specific. No boilerplate, no exaggerated claims. Verify human-in-the-loop framing (Constraint: human-in-the-loop framing). |
+| 04.3 | Completed | 2026-05-21 04:22 PM | 2026-05-21 04:23 PM | Add Artifact content collection schema to `src/content/config.ts`: `title`, `type` (enum: prompt/generated), `command` (optional), `excerpt` (boolean), `sortOrder` (PDR Section 2.1). |
+| 04.4 | Completed | 2026-05-21 04:23 PM | 2026-05-21 04:24 PM | Create artifact content entries in `src/content/artifacts/` from actual SDLC files: at least one prompt excerpt (from `skill/*.md`) and at least one generated document excerpt (from `sdlc/docs/*.md`) (PDR Section 2.3). |
+| 04.5 | Completed | 2026-05-21 04:24 PM | 2026-05-21 04:25 PM | Implement `src/components/ArtifactExample.astro`: styled block with title, type badge ("Prompt" or "Generated Document"), optional command label, rendered markdown content, excerpt note when applicable (PDR Section 4.8). |
+| 04.6 | Completed | 2026-05-21 04:25 PM | 2026-05-21 04:26 PM | Build artifacts page at `src/pages/artifacts.astro` using ContentLayout: heading "Example Artifacts", ArtifactExample components for each artifact entry, labeled by type and command (PDR Section 5 Artifacts). |
+| 04.7 | Completed | 2026-05-21 04:26 PM | 2026-05-21 04:26 PM | Add both pages to Nav: Portfolio at `navOrder: 5` with label "Portfolio", Artifacts at `navOrder: 6` with label "Artifacts". |
+| 04.8 | Completed | 2026-05-21 04:26 PM | 2026-05-21 04:27 PM | Spot-check accessibility: heading hierarchy, code block readability, artifact type badges have sufficient contrast, all links have descriptive text (NFR-003). |
 
 ### Phase 04 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Added artifacts collection to `src/content/config.ts`, 3 artifact entries, `src/components/ArtifactExample.astro`, `src/pages/portfolio.astro`, `src/pages/artifacts.astro`.
+- **Commit:** `Phase 04: Portfolio and artifacts pages — ArtifactExample, content entries, portfolio and artifacts pages`
 
 ---
 

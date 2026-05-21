@@ -12,4 +12,15 @@ const commands = defineCollection({
   }),
 });
 
-export const collections = { commands };
+const artifacts = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(["prompt", "generated"]),
+    command: z.string().optional(),
+    excerpt: z.boolean().default(false),
+    sortOrder: z.number(),
+  }),
+});
+
+export const collections = { commands, artifacts };
