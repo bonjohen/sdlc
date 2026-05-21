@@ -14,13 +14,13 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 03.1 | Open | | | Build education page at `src/pages/why.astro` using ContentLayout: heading "Why Stages?", sections on gap surfacing, traceability chains, phased execution, human-in-the-loop review. Educational tone, not marketing (PDR Section 5 Education). |
-| 03.2 | Open | | | Build getting-started page at `src/pages/getting-started.astro` using ContentLayout: heading "Getting Started", step-by-step command sequence for the normal (conversation) workflow path (PDR Section 5 Getting Started). |
-| 03.3 | Open | | | Add fast path and mixed path command sequences to the getting-started page, clearly labeled as alternatives to the normal path. |
-| 03.4 | Open | | | Add expected output descriptions at each step on the getting-started page (e.g., "After `draft-user`: a structured `draft.user.md` file appears in `sdlc/docs/`"). |
-| 03.5 | Open | | | Add both pages to Nav: Education at `navOrder: 3` with label "Why Stages?", Getting Started at `navOrder: 4`. |
-| 03.6 | Open | | | Spot-check accessibility: heading hierarchy, code block readability (sufficient contrast, monospace font), keyboard navigation (NFR-003). |
-| 03.7 | Open | | | Verify the getting-started page provides enough information for a developer to start using the SDLC pipeline without requiring additional documentation (US-013 acceptance criteria). |
+| 03.1 | Completed | 2026-05-21 04:16 PM | 2026-05-21 04:18 PM | Build education page at `src/pages/why.astro` using ContentLayout: heading "Why Stages?", sections on gap surfacing, traceability chains, phased execution, human-in-the-loop review. Educational tone, not marketing (PDR Section 5 Education). |
+| 03.2 | Completed | 2026-05-21 04:18 PM | 2026-05-21 04:20 PM | Build getting-started page at `src/pages/getting-started.astro` using ContentLayout: heading "Getting Started", step-by-step command sequence for the normal (conversation) workflow path (PDR Section 5 Getting Started). |
+| 03.3 | Completed | 2026-05-21 04:18 PM | 2026-05-21 04:20 PM | Add fast path and mixed path command sequences to the getting-started page, clearly labeled as alternatives to the normal path. |
+| 03.4 | Completed | 2026-05-21 04:18 PM | 2026-05-21 04:20 PM | Add expected output descriptions at each step on the getting-started page (e.g., "After `draft-user`: a structured `draft.user.md` file appears in `sdlc/docs/`"). |
+| 03.5 | Completed | 2026-05-21 04:20 PM | 2026-05-21 04:20 PM | Add both pages to Nav: Education at `navOrder: 3` with label "Why Stages?", Getting Started at `navOrder: 4`. |
+| 03.6 | Completed | 2026-05-21 04:20 PM | 2026-05-21 04:21 PM | Spot-check accessibility: heading hierarchy, code block readability (sufficient contrast, monospace font), keyboard navigation (NFR-003). |
+| 03.7 | Completed | 2026-05-21 04:21 PM | 2026-05-21 04:21 PM | Verify the getting-started page provides enough information for a developer to start using the SDLC pipeline without requiring additional documentation (US-013 acceptance criteria). |
 
 ## Context
 
@@ -178,7 +178,5 @@ Code examples on the getting-started page should use `<pre><code>` with appropri
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `src/pages/why.astro` (education page with gap surfacing, traceability, phased execution, human-in-the-loop sections) and `src/pages/getting-started.astro` (step-by-step guide with conversation path, fast path, mixed path, and expected output table). Nav already had entries for both pages from Phase 01.
+- **Commit:** `Phase 03: Education and getting-started pages — Why Stages and Getting Started`

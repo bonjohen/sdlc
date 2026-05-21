@@ -1,0 +1,163 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+---
+
+<ContentLayout title="Getting Started" description="Step-by-step guide to using the SDLC prompt pipeline, from first conversation to working code.">
+  <h1>Getting Started</h1>
+  <p>The SDLC pipeline is a set of prompts invoked as a Claude Code skill. You need <a href="https://claude.ai/code">Claude Code</a> with the <code>/sdlc</code> skill installed. Once set up, you run commands in sequence to move from idea to implementation.</p>
+
+  <h2>The Normal (Conversation) Path</h2>
+  <p>The most thorough path. Have a conversation about each stage, then format it into a document.</p>
+
+  <ol class="steps">
+    <li>
+      <strong>Have a conversation about your product idea</strong>
+      <p>Describe what you want to build, who it is for, what it should do, and what it should not do. Discuss user stories, acceptance criteria, and constraints.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc draft-user</code></strong>
+      <p>Produces: <code>sdlc/docs/draft.user.md</code> — structured user stories, personas, functional requirements, and acceptance criteria extracted from the conversation.</p>
+    </li>
+    <li>
+      <strong>Have a conversation about physical design</strong>
+      <p>Discuss architecture, components, data models, technology choices, platform decisions. Reference the user requirements document.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc draft-pdr</code></strong>
+      <p>Produces: <code>sdlc/docs/draft.pdr.md</code> — a Product Design Review with component interfaces, data model, dependencies, and configuration.</p>
+    </li>
+    <li>
+      <strong>Have a conversation about implementation planning</strong>
+      <p>Discuss phase boundaries, priorities, risk ordering, milestones, and what to build first.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc draft-plan</code></strong>
+      <p>Produces: <code>sdlc/docs/draft.plan.md</code> — a phased release plan with task tables, dependencies, and acceptance criteria per phase.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc finalize</code></strong>
+      <p>Produces three final documents: <code>sdlc/docs/final.user.md</code>, <code>sdlc/docs/final.pdr.md</code>, <code>sdlc/docs/final.plan.md</code>. Performs gap analysis, adds traceability IDs, and cross-references all three documents.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc expand</code></strong>
+      <p>Produces: <code>sdlc/plan/phase00/plan.md</code>, <code>sdlc/plan/phase01/plan.md</code>, etc. — one self-contained execution plan per phase.</p>
+    </li>
+    <li>
+      <strong>Run <code>/sdlc implement</code></strong>
+      <p>Executes the next incomplete phase: writes code, updates task statuses with timestamps, runs verification, and commits. Run repeatedly or use <code>/sdlc implement all</code> for autonomous end-to-end execution.</p>
+    </li>
+  </ol>
+
+  <h2>The Fast Path</h2>
+  <p>Conversation for user requirements only. The PDR and plan are generated directly from documents — faster, but the AI makes more design decisions autonomously.</p>
+
+  <ol class="steps">
+    <li><strong>Have a conversation about your product idea</strong></li>
+    <li><strong>Run <code>/sdlc draft-user</code></strong> — produces <code>sdlc/docs/draft.user.md</code></li>
+    <li><strong>Run <code>/sdlc gen-pdr</code></strong> — generates <code>sdlc/docs/draft.pdr.md</code> from user requirements</li>
+    <li><strong>Run <code>/sdlc gen-plan</code></strong> — generates <code>sdlc/docs/draft.plan.md</code> from the PDR</li>
+    <li><strong>Run <code>/sdlc finalize</code></strong> — same as normal path</li>
+    <li><strong>Run <code>/sdlc expand</code></strong> — same as normal path</li>
+    <li><strong>Run <code>/sdlc implement</code></strong> — same as normal path</li>
+  </ol>
+
+  <h2>The Mixed Path</h2>
+  <p>Any combination of conversation (<code>draft-*</code>) and generation (<code>gen-*</code>) for the PDR and plan stages. User requirements always start from conversation — there is no <code>gen-user</code>.</p>
+  <p>Example: conversation for requirements, generated PDR, conversation for plan:</p>
+  <ol class="steps">
+    <li><strong>Conversation + <code>/sdlc draft-user</code></strong></li>
+    <li><strong><code>/sdlc gen-pdr</code></strong> — generated from docs</li>
+    <li><strong>Conversation + <code>/sdlc draft-plan</code></strong> — discuss planning decisions</li>
+    <li><strong><code>/sdlc finalize</code> → <code>/sdlc expand</code> → <code>/sdlc implement</code></strong></li>
+  </ol>
+
+  <h2>What You Get at Each Step</h2>
+
+  <div class="output-table-wrapper">
+    <table class="output-table">
+      <thead>
+        <tr>
+          <th>Command</th>
+          <th>Output File</th>
+          <th>What It Contains</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>draft-user</code></td>
+          <td><code>sdlc/docs/draft.user.md</code></td>
+          <td>Structured user stories, personas, acceptance criteria</td>
+        </tr>
+        <tr>
+          <td><code>draft-pdr</code> / <code>gen-pdr</code></td>
+          <td><code>sdlc/docs/draft.pdr.md</code></td>
+          <td>Physical design: data model, components, packages, config</td>
+        </tr>
+        <tr>
+          <td><code>draft-plan</code> / <code>gen-plan</code></td>
+          <td><code>sdlc/docs/draft.plan.md</code></td>
+          <td>Phased release plan with task tables</td>
+        </tr>
+        <tr>
+          <td><code>finalize</code></td>
+          <td><code>sdlc/docs/final.*.md</code> (3 files)</td>
+          <td>Gap-filled, cross-referenced, ID-traced final documents</td>
+        </tr>
+        <tr>
+          <td><code>expand</code></td>
+          <td><code>sdlc/plan/phase{`{NN}`}/plan.md</code></td>
+          <td>Self-contained phase execution plans</td>
+        </tr>
+        <tr>
+          <td><code>implement</code></td>
+          <td>Modified source code + updated plans</td>
+          <td>Working code committed per phase</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ContentLayout>
+
+<style>
+  .steps {
+    padding-left: 1.5rem;
+  }
+
+  .steps li {
+    margin-bottom: 1rem;
+  }
+
+  .steps li p {
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+
+  .output-table-wrapper {
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .output-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .output-table th,
+  .output-table td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .output-table th {
+    background: var(--color-bg-alt);
+    font-weight: 600;
+    color: var(--color-heading);
+  }
+
+  .output-table code {
+    font-size: 0.85em;
+  }
+</style>

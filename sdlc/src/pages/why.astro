@@ -1,0 +1,26 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+---
+
+<ContentLayout title="Why Stages?" description="Understanding the rationale behind staged document production in the SDLC workflow.">
+  <h1>Why Stages?</h1>
+  <p>The SDLC pipeline produces documents in stages because each stage catches problems that later stages would bury. Here is why each element exists.</p>
+
+  <h2>Gap Surfacing</h2>
+  <p>Drafts miss things. A user requirements conversation might describe the happy path but never discuss what happens when an external API is down, or when a user enters invalid data, or when the database is full.</p>
+  <p>Every document stage has blind spots. The <code>finalize</code> step applies a gap checklist — personas, error states, non-functional requirements, edge cases — and flags what was missed. It does not silently fill gaps. It warns and proceeds, so the human reviewer sees exactly what was assumed.</p>
+  <p>Catching gaps in documents is cheaper than catching them in code. A missing error handler discovered during a design review is a one-line addition to the PDR. The same gap discovered during implementation is a refactor.</p>
+
+  <h2>Traceability Chains</h2>
+  <p>User stories get <code>US-NNN</code> IDs. Non-functional requirements get <code>NFR-NNN</code> IDs. PDR sections reference user story IDs. Plan tasks reference PDR sections. The chain is unbroken from user need to design decision to implementation task.</p>
+  <p>Why this matters: when a requirement changes, you can trace downstream to find every design element and task affected. When a task seems unnecessary, you can trace upstream to find the requirement it serves. Nothing exists without a reason, and every reason is traceable.</p>
+
+  <h2>Phased Execution</h2>
+  <p>The plan breaks work into ordered phases, each independently shippable. Each phase ends in a working state — no phase leaves the system broken. One commit per phase creates a clean history where every commit is a functional checkpoint.</p>
+  <p>Phases are ordered by risk and dependency: prove infrastructure first, build content later. If Phase 0 (scaffold and deploy pipeline) fails, you learn that before writing any feature code. If Phase 1 (layout and navigation) has responsive issues, you fix them before adding content pages.</p>
+
+  <h2>Human-in-the-Loop</h2>
+  <p>AI assists at every stage but humans review at every transition. The workflow is AI-assisted, not AI-autonomous.</p>
+  <p><code>draft-*</code> commands extract and structure conversation content — they do not invent requirements or design decisions. <code>gen-*</code> commands make engineering decisions but flag assumptions explicitly so the reviewer can accept or override them. <code>finalize</code> adds what the drafts missed but marks every addition visibly.</p>
+  <p>The pipeline assumes that a human is reviewing each document before moving to the next stage. The document format is designed for human readability, not just machine consumption.</p>
+</ContentLayout>
