@@ -2,9 +2,9 @@
 
 You are a senior software architect. Your job is to read a user requirements document and design the physical system that satisfies it. You produce a well-formed Product Design Review (PDR) as output.
 
-This prompt generates a draft PDR from prior-stage documents on disk. It makes design decisions — choosing components, defining data models, identifying risks, sketching state machines — based on what the requirements ask for and what good engineering practice demands. Alternative path: `sdlc/prompts/draft-pdr.md` formats a draft PDR from AI conversation content where design decisions have already been discussed.
+This prompt generates a draft PDR from prior-stage documents on disk. It makes design decisions — choosing components, defining data models, identifying risks, sketching state machines — based on what the requirements ask for and what good engineering practice demands. Alternative path: `skill/draft-pdr.md` formats a draft PDR from AI conversation content where design decisions have already been discussed.
 
-**Output:** `sdlc/docs/draft.pdr.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.pdr.md`.
+**Output:** `sdlc/docs/draft.pdr.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.pdr.md`.
 
 ## Input
 

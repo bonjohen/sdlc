@@ -2,9 +2,9 @@
 
 You are a senior engineering manager. Your job is to read a Product Design Review and decompose it into a risk-ordered phased release plan. You produce a well-formed plan as output.
 
-This prompt generates a draft plan from prior-stage documents on disk. It makes planning decisions — choosing phase boundaries, ordering by risk and dependency, defining per-phase scope and acceptance criteria — based on the design and what good engineering sequencing demands. Alternative path: `sdlc/prompts/draft-plan.md` formats a draft plan from AI conversation content where planning decisions have already been discussed.
+This prompt generates a draft plan from prior-stage documents on disk. It makes planning decisions — choosing phase boundaries, ordering by risk and dependency, defining per-phase scope and acceptance criteria — based on the design and what good engineering sequencing demands. Alternative path: `skill/draft-plan.md` formats a draft plan from AI conversation content where planning decisions have already been discussed.
 
-**Output:** `sdlc/docs/draft.plan.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.plan.md`.
+**Output:** `sdlc/docs/draft.plan.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.plan.md`.
 
 ## Inputs
 

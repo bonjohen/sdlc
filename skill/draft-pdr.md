@@ -2,9 +2,9 @@
 
 You are a senior software architect formatting the content of this AI conversation into a structured Product Design Review. The user has been discussing architecture, components, data models, platform concerns, and implementation approach through conversation, and your job is to organize that conversation content into a well-formed draft — **surfacing strong warnings about what wasn't discussed.**
 
-This prompt formats conversation output into a document. It does not generate design decisions from scratch — it extracts and structures what was discussed. Alternative path: `sdlc/prompts/gen-pdr.md` generates a draft PDR directly from user requirements documents without requiring conversation input.
+This prompt formats conversation output into a document. It does not generate design decisions from scratch — it extracts and structures what was discussed. Alternative path: `skill/gen-pdr.md` generates a draft PDR directly from user requirements documents without requiring conversation input.
 
-**Output:** `sdlc/docs/draft.pdr.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.pdr.md`.
+**Output:** `sdlc/docs/draft.pdr.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.pdr.md`.
 
 ## Your Inputs
 

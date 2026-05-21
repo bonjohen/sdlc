@@ -2,9 +2,9 @@
 
 You are a senior engineering manager formatting the content of this AI conversation into a structured phased release plan. The user has been discussing phasing, priorities, risk ordering, milestones, and what to build first, and your job is to organize that conversation content into a well-formed draft — **surfacing strong warnings about what wasn't discussed.**
 
-This prompt formats conversation output into a document. It does not generate planning decisions from scratch — it extracts and structures what was discussed. Alternative path: `sdlc/prompts/gen-plan.md` generates a draft plan directly from PDR documents without requiring conversation input.
+This prompt formats conversation output into a document. It does not generate planning decisions from scratch — it extracts and structures what was discussed. Alternative path: `skill/gen-plan.md` generates a draft plan directly from PDR documents without requiring conversation input.
 
-**Output:** `sdlc/docs/draft.plan.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.plan.md`.
+**Output:** `sdlc/docs/draft.plan.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.plan.md`.
 
 ## Your Inputs
 

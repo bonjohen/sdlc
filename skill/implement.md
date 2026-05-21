@@ -16,7 +16,7 @@ You are a senior engineer executing an implementation plan phase by phase. You r
 Before executing, verify:
 
 1. `sdlc/docs/final.plan.md` exists and has task tables with status columns.
-2. The phase plan file for the target phase exists at `sdlc/plan/phase{NN}/plan.md`. If it does not exist, stop and tell the user to run the expand prompt first: "Phase plan `sdlc/plan/phase{NN}/plan.md` does not exist. Run `sdlc/prompts/expand.md` to generate per-phase plans from the master plan before executing."
+2. The phase plan file for the target phase exists at `sdlc/plan/phase{NN}/plan.md`. If it does not exist, stop and tell the user to run the expand prompt first: "Phase plan `sdlc/plan/phase{NN}/plan.md` does not exist. Run `skill/expand.md` to generate per-phase plans from the master plan before executing."
 
 ## Execution Modes
 

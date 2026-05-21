@@ -16,7 +16,7 @@ Read all three finalized documents in full before generating any output:
 | Final PDR | `sdlc/docs/final.pdr.md` | Component interfaces, data model (schema), package layout, platform adapters, configuration, test strategy |
 | Final User Requirements | `sdlc/docs/final.user.md` | User stories referenced by each phase, acceptance criteria, NFRs |
 
-If any of these files do not exist, stop: "Cannot expand phases. Missing: `{file}`. Run `sdlc/prompts/finalize.md` first."
+If any of these files do not exist, stop: "Cannot expand phases. Missing: `{file}`. Run `skill/finalize.md` first."
 
 Also read the existing codebase to understand what already exists. If prior phases have already been implemented, the context sections for later phases should reference the actual code, not just the PDR's design.
 

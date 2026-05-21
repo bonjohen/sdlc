@@ -4,7 +4,7 @@ You are a senior product analyst formatting the content of this AI conversation 
 
 This prompt formats conversation output into a document. It does not design or generate requirements — it extracts and structures what was said. User requirements always originate from conversation; there is no `gen-*.md` equivalent for this stage.
 
-**Output:** `sdlc/docs/draft.user.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.user.md`.
+**Output:** `sdlc/docs/draft.user.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.user.md`.
 
 ## Your Input
 

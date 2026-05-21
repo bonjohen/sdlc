@@ -55,11 +55,11 @@ Copy or symlink `SKILL.md` into your Claude Code skills directory:
 ```bash
 # Symlink (stays in sync with the repo)
 mkdir -p ~/.claude/skills/sdlc
-ln -s "$(pwd)/sdlc/prompts/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
+ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 
 # Or copy
 mkdir -p ~/.claude/skills/sdlc
-cp sdlc/prompts/SKILL.md ~/.claude/skills/sdlc/SKILL.md
+cp skill/SKILL.md ~/.claude/skills/sdlc/SKILL.md
 ```
 
 ## When to Use Each Prompt
@@ -224,18 +224,18 @@ Any combination works as long as the inputs exist when you run each prompt.
 ## File Layout
 
 ```
+skill/
+  prompt-instructions.md      ← this file
+  SKILL.md                    ← /sdlc skill dispatcher (install to ~/.claude/skills/sdlc/)
+  draft-user.md               ← conversation → draft user requirements
+  draft-pdr.md                ← conversation → draft PDR
+  draft-plan.md               ← conversation → draft release plan
+  gen-pdr.md                  ← user requirements → draft PDR
+  gen-plan.md                 ← PDR → draft release plan
+  finalize.md                 ← drafts → finals (gap analysis, traceability)
+  expand.md                   ← final plan → per-phase execution plans
+  implement.md                ← execute phases, update state, write code
 sdlc/
-  prompts/
-    prompt-instructions.md    ← this file
-    SKILL.md                  ← /sdlc skill dispatcher (install to ~/.claude/skills/sdlc/)
-    draft-user.md             ← conversation → draft user requirements
-    draft-pdr.md              ← conversation → draft PDR
-    draft-plan.md             ← conversation → draft release plan
-    gen-pdr.md                ← user requirements → draft PDR
-    gen-plan.md               ← PDR → draft release plan
-    finalize.md               ← drafts → finals (gap analysis, traceability)
-    expand.md                 ← final plan → per-phase execution plans
-    implement.md              ← execute phases, update state, write code
   docs/
     draft.user.md             ← draft user requirements
     draft.pdr.md              ← draft Product Design Review
