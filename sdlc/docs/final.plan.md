@@ -211,25 +211,23 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 10.1 | Open | | | Redesign `src/styles/global.css`: deep slate/off-white palette, electric blue accent, modern sans-serif, increased spacing, card/shadow utilities. Preserve 4.5:1 contrast (NFR-004). |
-| 10.2 | Open | | | Redesign hero section in `src/pages/index.astro`: bold title, subtitle, three CTA buttons (Explore Workflow, View Artifacts, Case Study). |
-| 10.3 | Open | | | Add "Without I2I / With I2I" comparison section to homepage: two-column table contrasting vague vs. structured approaches. |
-| 10.4 | Open | | | Add problem/solution messaging block to homepage: "Most AI coding failures start before code is written" → "I2I creates durable SDLC artifacts before implementation begins." |
-| 10.5 | Open | | | Redesign WorkflowDiagram as clickable stage cards: 7 cards with descriptions, links to /workflow/, hover states, accent borders. |
-| 10.6 | Open | | | Add "Human-in-the-loop" trust section to homepage after comparison. |
-| 10.7 | Open | | | Redesign CommandCard to match new visual identity: dark card, accent border, shadow on hover. |
-| 10.8 | Open | | | Update Nav to match new palette: dark background, light text, accent active indicator. |
-| 10.9 | Open | | | Update Footer to match new palette: dark background, subtle top border, light text. |
-| 10.10 | Open | | | Restructure portfolio page as "What This Project Demonstrates" with skill bullets. |
-| 10.11 | Open | | | Update artifacts page and ArtifactExample with code-document card styling. |
-| 10.12 | Open | | | Full visual QA: all 7 pages at 320/768/1440px, no-JS readability, contrast ratios. |
+| 10.1 | Completed | 2026-05-21 04:50 PM | 2026-05-21 04:53 PM | Redesign `src/styles/global.css`: deep slate/off-white palette, electric blue accent, modern sans-serif, increased spacing, card/shadow utilities. Preserve 4.5:1 contrast (NFR-004). |
+| 10.2 | Completed | 2026-05-21 04:53 PM | 2026-05-21 04:56 PM | Redesign hero section in `src/pages/index.astro`: bold title, subtitle, three CTA buttons (Explore Workflow, View Artifacts, Case Study). |
+| 10.3 | Completed | 2026-05-21 04:53 PM | 2026-05-21 04:56 PM | Add "Without I2I / With I2I" comparison section to homepage: two-column table contrasting vague vs. structured approaches. |
+| 10.4 | Completed | 2026-05-21 04:53 PM | 2026-05-21 04:56 PM | Add problem/solution messaging block to homepage: "Most AI coding failures start before code is written" → "I2I creates durable SDLC artifacts before implementation begins." |
+| 10.5 | Completed | 2026-05-21 04:56 PM | 2026-05-21 04:59 PM | Redesign WorkflowDiagram as clickable stage cards: 7 cards with descriptions, links to /workflow/, hover states, accent borders. |
+| 10.6 | Completed | 2026-05-21 04:53 PM | 2026-05-21 04:56 PM | Add "Human-in-the-loop" trust section to homepage after comparison. |
+| 10.7 | Completed | 2026-05-21 04:59 PM | 2026-05-21 05:02 PM | Redesign CommandCard to match new visual identity: dark card, accent border, shadow on hover. |
+| 10.8 | Completed | 2026-05-21 04:59 PM | 2026-05-21 05:02 PM | Update Nav to match new palette: dark background, light text, accent active indicator. |
+| 10.9 | Completed | 2026-05-21 04:59 PM | 2026-05-21 05:02 PM | Update Footer to match new palette: dark background, subtle top border, light text. |
+| 10.10 | Completed | 2026-05-21 05:02 PM | 2026-05-21 05:04 PM | Restructure portfolio page as "What This Project Demonstrates" with skill bullets. |
+| 10.11 | Completed | 2026-05-21 05:04 PM | 2026-05-21 05:07 PM | Update artifacts page and ArtifactExample with code-document card styling. |
+| 10.12 | Completed | 2026-05-21 05:07 PM | 2026-05-21 05:09 PM | Full visual QA: all 7 pages at 320/768/1440px, no-JS readability, contrast ratios. |
 
 ### Phase 10 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Redesigned `global.css` with dark slate palette (#0f172a bg, #60a5fa accent), new typography scale, card/shadow utilities. Rebuilt homepage with hero section, problem/solution callout, comparison table, trust section, and CTA cards. Redesigned WorkflowDiagram as 7 clickable stage cards. Updated CommandCard, Nav, Footer, PathDiagram, and ArtifactExample to match dark palette. Restructured portfolio page with skill bullet list. All 8 pages build, zero JS, correct heading hierarchy, WCAG contrast ratios preserved.
+- **Commit:** `Phase 10: Design refresh — visual identity and marketing clarity`
 
 ---
 

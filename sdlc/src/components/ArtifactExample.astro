@@ -13,8 +13,10 @@ const typeLabel = type === "prompt" ? "Prompt" : "Generated Document";
 
 <article class="artifact-example">
   <header class="artifact-header">
-    <h3>{title}</h3>
-    <span class="type-badge" data-type={type}>{typeLabel}</span>
+    <div class="artifact-title-row">
+      <h3>{title}</h3>
+      <span class="type-badge" data-type={type}>{typeLabel}</span>
+    </div>
     {command && <span class="command-label">from <code>{command}</code></span>}
   </header>
   <div class="artifact-content">
@@ -29,29 +31,38 @@ const typeLabel = type === "prompt" ? "Prompt" : "Generated Document";
 
 <style>
   .artifact-example {
+    background: var(--color-bg-card);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    padding: 1.25rem;
+    border-top: 3px solid var(--color-accent-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
     margin-bottom: 1.5rem;
-    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
   }
 
   .artifact-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  .artifact-title-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 0.75rem;
   }
 
   .artifact-header h3 {
     margin: 0;
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
+    font-family: var(--font-mono);
+    color: var(--color-heading);
   }
 
   .type-badge {
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -61,25 +72,28 @@ const typeLabel = type === "prompt" ? "Prompt" : "Generated Document";
   }
 
   .type-badge[data-type="prompt"] {
-    color: #1a56db;
-    border-color: #1a56db;
-    background: #eff6ff;
+    color: #93c5fd;
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.15);
   }
 
   .type-badge[data-type="generated"] {
-    color: #166534;
-    border-color: #166534;
-    background: #f0fdf4;
+    color: #86efac;
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.15);
   }
 
   .command-label {
-    font-size: 0.85rem;
-    color: var(--color-text);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+    display: block;
   }
 
   .artifact-content {
+    padding: 1.25rem;
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
   .artifact-content :global(p:last-child) {
@@ -87,10 +101,11 @@ const typeLabel = type === "prompt" ? "Prompt" : "Generated Document";
   }
 
   .excerpt-note {
-    margin-top: 0.75rem;
-    margin-bottom: 0;
-    font-size: 0.85rem;
-    color: var(--color-text);
-    opacity: 0.7;
+    padding: 0.75rem 1.25rem;
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    background: rgba(15, 23, 42, 0.3);
   }
 </style>

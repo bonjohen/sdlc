@@ -6,27 +6,55 @@ import { creatorName, creatorGithub, repoName, repoUrl } from '../config';
 <ContentLayout title="About This Project" description="What the I2I project demonstrates: AI workflow design, SDLC methodology, documentation practice, and software planning.">
   <h1>About This Project</h1>
 
-  <h2>What This Project Demonstrates</h2>
-  <p>I2I is a prompt-driven software development lifecycle. It is both a set of tools and a demonstration of how those tools work. The project demonstrates four areas of competency:</p>
-  <ul>
-    <li><strong>AI workflow design</strong> — Eight structured prompts guide an AI through a multi-stage process with defined inputs, outputs, and contracts between stages. Each prompt constrains the AI to extract and structure rather than invent, keeping the human in control of decisions.</li>
-    <li><strong>SDLC methodology</strong> — The pipeline applies formal software engineering discipline to AI-assisted development: requirements gathering, physical design review, phased release planning, and verified implementation.</li>
-    <li><strong>Documentation practice</strong> — Every stage produces a document with cross-references and traceability IDs. User stories trace to design decisions trace to implementation tasks. Nothing exists without a traceable origin.</li>
-    <li><strong>Software planning</strong> — The plan phase breaks work into risk-ordered, dependency-aware phases. Each phase is independently shippable and ends in a working state. One commit per phase creates a clean project history.</li>
-  </ul>
+  <section class="section">
+    <h2>What This Project Demonstrates</h2>
+    <ul class="skill-list">
+      <li><strong>AI-assisted SDLC design</strong> — Eight structured prompts guide an AI through a multi-stage process with defined inputs, outputs, and contracts between stages.</li>
+      <li><strong>Prompt pipeline engineering</strong> — Each prompt constrains the AI to extract and structure rather than invent, keeping the human in control of decisions.</li>
+      <li><strong>Requirements-to-plan traceability</strong> — User stories trace to design decisions trace to implementation tasks. Nothing exists without a traceable origin.</li>
+      <li><strong>Human-in-the-loop workflow</strong> — AI assists at every stage but humans review at every transition. The workflow is AI-assisted, not AI-autonomous.</li>
+      <li><strong>Developer automation</strong> — The plan phase breaks work into risk-ordered, dependency-aware phases. Each phase is independently shippable and ends in a working state.</li>
+      <li><strong>Practical AI coding agents</strong> — This site was built using the same pipeline it explains — the documents in <code>sdlc/docs/</code> are the actual artifacts that produced this site.</li>
+    </ul>
+  </section>
 
-  <h2>How It Was Built</h2>
-  <p>This website was built using the same SDLC pipeline it explains. The user requirements were gathered through conversation, the physical design was reviewed, the implementation was planned in phases, and each phase was executed with task tracking and verification.</p>
-  <p>The pipeline is not theoretical — the <code>sdlc/docs/</code> directory contains the actual requirements, design, and plan documents that produced this site. The <code>sdlc/plan/</code> directory contains the per-phase execution plans with timestamps showing when each task was started and completed.</p>
+  <section class="section">
+    <h2>How It Was Built</h2>
+    <p>This website was built using the same SDLC pipeline it explains. The user requirements were gathered through conversation, the physical design was reviewed, the implementation was planned in phases, and each phase was executed with task tracking and verification.</p>
+    <p>The <code>sdlc/docs/</code> directory contains the actual requirements, design, and plan documents that produced this site. The <code>sdlc/plan/</code> directory contains the per-phase execution plans with timestamps showing when each task was started and completed.</p>
+  </section>
 
-  <h2>The Approach</h2>
-  <p>AI-assisted development works best with structure. Without it, AI coding tools produce inconsistent results — they make different architectural choices in different sessions, miss edge cases, and lose context across long implementations.</p>
-  <p>This workflow provides that structure. The human sets direction through conversation and reviews each document before it moves to the next stage. The AI handles volume: formatting conversations into documents, generating design decisions from requirements, expanding plans into executable tasks, and implementing code from phase plans.</p>
-  <p>The result is a human-in-the-loop process where every decision is traceable and every output is verifiable. The pipeline does not claim full automation — it is explicitly AI-assisted, with human review at every stage transition.</p>
+  <section class="section">
+    <h2>The Approach</h2>
+    <p>AI-assisted development works best with structure. Without it, AI coding tools produce inconsistent results — they make different architectural choices in different sessions, miss edge cases, and lose context across long implementations.</p>
+    <p>This workflow provides that structure. The human sets direction through conversation and reviews each document before it moves to the next stage. The AI handles volume: formatting conversations into documents, generating design decisions from requirements, expanding plans into executable tasks, and implementing code from phase plans.</p>
+  </section>
 
-  <h2>Links</h2>
-  <ul>
-    <li><a href={creatorGithub}>{creatorName} on GitHub</a></li>
-    {repoName && <li><a href={repoUrl}>Project repository</a></li>}
-  </ul>
+  <section class="section">
+    <h2>Links</h2>
+    <ul>
+      <li><a href={creatorGithub}>{creatorName} on GitHub</a></li>
+      {repoName && <li><a href={repoUrl}>Project repository</a></li>}
+    </ul>
+  </section>
 </ContentLayout>
+
+<style>
+  .skill-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .skill-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent-strong);
+    border-radius: var(--radius-sm);
+  }
+
+  .skill-list li strong {
+    color: var(--color-accent);
+  }
+</style>
