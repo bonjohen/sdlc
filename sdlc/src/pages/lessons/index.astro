@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+
+const lessons = await getCollection('lessons');
+const sorted = lessons.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+
+const categories = [
+  { key: 'architecture', label: 'Architecture & Design' },
+  { key: 'process', label: 'Process & Methodology' },
+  { key: 'meta', label: 'Meta' },
+];
+---
+
+<ContentLayout title="Lessons Learned" description="Reusable patterns and insights extracted from the SDLC prompt pipeline project.">
+  <h1>Lessons Learned</h1>
+  <p>Reusable patterns and insights extracted from building and using the SDLC prompt pipeline. Each lesson captures a decision, pattern, or mistake and is written so a developer on a different project can understand and apply it.</p>
+
+  {categories.map(({ key, label }) => {
+    const items = sorted.filter(l => l.data.category === key);
+    return items.length > 0 && (
+      <>
+        <h2>{label}</h2>
+        <ul class="lesson-list">
+          {items.map(lesson => (
+            <li>
+              <a href={`/lessons/${lesson.id.replace(/\.md$/, '')}/`}>
+                <strong>{lesson.data.title}</strong>
+                <p>{lesson.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  })}
+</ContentLayout>
+
+<style>
+  .lesson-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 2rem;
+  }
+
+  .lesson-list li {
+    border-left: 3px solid var(--color-accent);
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .lesson-list li:hover {
+    border-left-color: var(--color-accent-strong);
+  }
+
+  .lesson-list li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    transition: background 0.2s;
+  }
+
+  .lesson-list li a:hover {
+    background: rgba(96, 165, 250, 0.08);
+  }
+
+  .lesson-list li strong {
+    display: block;
+    color: var(--color-link);
+    font-size: 1.05rem;
+  }
+
+  .lesson-list li p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+</style>

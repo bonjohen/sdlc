@@ -23,4 +23,14 @@ const artifacts = defineCollection({
   }),
 });
 
-export const collections = { commands, artifacts };
+const lessons = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    category: z.enum(["architecture", "process", "meta"]),
+    sortOrder: z.number(),
+  }),
+});
+
+export const collections = { commands, artifacts, lessons };
