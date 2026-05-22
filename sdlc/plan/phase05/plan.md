@@ -14,16 +14,16 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 05.1 | Open | | | Build custom 404 page at `src/pages/404.astro` using ContentLayout: "Page not found" message, link back to homepage, same navigation and footer as other pages (PDR Section 5, 404 page). |
-| 05.2 | Open | | | Install `@astrojs/sitemap` and add to `astro.config.mjs` integrations. Verify `sitemap.xml` is generated in build output and includes all pages (NFR-006, PDR Section 1.2). |
-| 05.3 | Open | | | Audit all pages for unique `<title>`, `<meta description>`, and Open Graph tags (`og:title`, `og:description`, `og:type`, `og:url`). Fix any pages with missing or duplicate metadata (NFR-006). |
-| 05.4 | Open | | | Configure Astro build to treat broken internal links as errors. Verify no broken links exist in built output (PDR Section 7, 9 Error Handling). |
-| 05.5 | Open | | | Test responsive rendering on all 7 pages at 320px, 768px, 1440px, and 2560px viewport widths. Fix any layout issues (NFR-005). |
-| 05.6 | Open | | | Verify all pages are readable with JavaScript disabled. Test CSS-only hamburger nav, WorkflowDiagram, PathDiagram (NFR-002, PDR-AC-006). |
-| 05.7 | Open | | | Run Lighthouse accessibility audit on all 7 pages. Target score >= 90 on each (NFR-003, NFR-004, PDR-AC-007). |
-| 05.8 | Open | | | Fix any accessibility failures identified by Lighthouse: contrast issues, heading order, alt text, keyboard focus, ARIA labels. |
-| 05.9 | Open | | | Verify custom domain readiness: add `CNAME` file to `public/`, confirm build succeeds, confirm base-path configuration is compatible with root-domain hosting (NFR-010, PDR-AC-008, PDR Risk 3). |
-| 05.10 | Open | | | Final content review: compare all command descriptions in `src/content/commands/` against current `skill/*.md` files. Compare artifact examples against their source files. Fix any drift. |
+| 05.1 | Completed | 2026-05-21 04:30 PM | 2026-05-21 04:31 PM | Build custom 404 page at `src/pages/404.astro` using ContentLayout: "Page not found" message, link back to homepage, same navigation and footer as other pages (PDR Section 5, 404 page). |
+| 05.2 | Completed | 2026-05-21 04:31 PM | 2026-05-21 04:32 PM | Install `@astrojs/sitemap` and add to `astro.config.mjs` integrations. Verify `sitemap.xml` is generated in build output and includes all pages (NFR-006, PDR Section 1.2). |
+| 05.3 | Completed | 2026-05-21 04:32 PM | 2026-05-21 04:34 PM | Audit all pages for unique `<title>`, `<meta description>`, and Open Graph tags (`og:title`, `og:description`, `og:type`, `og:url`). Fix any pages with missing or duplicate metadata (NFR-006). |
+| 05.4 | Completed | 2026-05-21 04:34 PM | 2026-05-21 04:36 PM | Configure Astro build to treat broken internal links as errors. Verify no broken links exist in built output (PDR Section 7, 9 Error Handling). |
+| 05.5 | Completed | 2026-05-21 04:36 PM | 2026-05-21 04:38 PM | Test responsive rendering on all 7 pages at 320px, 768px, 1440px, and 2560px viewport widths. Fix any layout issues (NFR-005). |
+| 05.6 | Completed | 2026-05-21 04:38 PM | 2026-05-21 04:40 PM | Verify all pages are readable with JavaScript disabled. Test CSS-only hamburger nav, WorkflowDiagram, PathDiagram (NFR-002, PDR-AC-006). |
+| 05.7 | Completed | 2026-05-21 04:40 PM | 2026-05-21 04:42 PM | Run Lighthouse accessibility audit on all 7 pages. Target score >= 90 on each (NFR-003, NFR-004, PDR-AC-007). |
+| 05.8 | Completed | 2026-05-21 04:42 PM | 2026-05-21 04:43 PM | Fix any accessibility failures identified by Lighthouse: contrast issues, heading order, alt text, keyboard focus, ARIA labels. |
+| 05.9 | Completed | 2026-05-21 04:43 PM | 2026-05-21 04:45 PM | Verify custom domain readiness: add `CNAME` file to `public/`, confirm build succeeds, confirm base-path configuration is compatible with root-domain hosting (NFR-010, PDR-AC-008, PDR Risk 3). |
+| 05.10 | Completed | 2026-05-21 04:45 PM | 2026-05-21 04:48 PM | Final content review: compare all command descriptions in `src/content/commands/` against current `skill/*.md` files. Compare artifact examples against their source files. Fix any drift. |
 
 ## Context
 
@@ -199,7 +199,5 @@ The goal is that broken internal links are caught before deployment — whether 
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `src/pages/404.astro`, `public/CNAME`. Installed `@astrojs/sitemap` and added to `astro.config.mjs`. Fixed homepage title to avoid "Home | I2I..." duplication in BaseLayout. Added responsive padding reduction at 480px breakpoint in `global.css` and `PathDiagram.astro`. Fixed heading hierarchy on artifacts page (added `<h2>` before `<h3>` artifact titles). Darkened accent color to `#1d4ed8` and mixed purple badges to `#6d28d9` for WCAG AA contrast compliance. Verified sitemap generation, internal link integrity, no-JS readability, custom domain config compatibility, and content accuracy against source skill files.
+- **Commit:** `Phase 05: Polish, accessibility, SEO, and custom domain readiness`

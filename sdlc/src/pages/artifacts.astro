@@ -11,6 +11,8 @@ const sorted = artifacts.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
   <h1>Example Artifacts</h1>
   <p>These are real excerpts from the SDLC pipeline — actual prompt text and generated document fragments from this project. They show what the pipeline produces at each stage.</p>
 
+  <h2>Pipeline Artifacts</h2>
+
   {sorted.map(async (artifact) => {
     const { Content } = await artifact.render();
     return (

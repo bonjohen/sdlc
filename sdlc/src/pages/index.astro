@@ -1,10 +1,10 @@
 ---
 import ContentLayout from '../layouts/ContentLayout.astro';
 import WorkflowDiagram from '../components/WorkflowDiagram.astro';
-import { siteDescription } from '../config';
+import { siteDescription, siteTitle } from '../config';
 ---
 
-<ContentLayout title="Home" description={siteDescription}>
+<ContentLayout title={siteTitle} description={siteDescription}>
   <h1>I2I — From Idea to Implementation</h1>
   <p class="tagline">A prompt-driven SDLC workflow that turns a software idea into implementation-ready plans and working code, through structured document stages.</p>
 
