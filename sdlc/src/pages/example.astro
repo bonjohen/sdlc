@@ -1,0 +1,263 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+---
+
+<ContentLayout title="End-to-End Example" description="A concrete walkthrough of the SDLC pipeline from rough idea to working code.">
+  <h1>End-to-End Example</h1>
+  <p>This walkthrough shows the full SDLC pipeline applied to a single, simple project: building a <strong>daily standup log</strong> — a static page where a developer records what they did yesterday, what they're doing today, and any blockers.</p>
+
+  <div class="pipeline-steps">
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 1</span>
+        <h2>The Idea</h2>
+        <span class="step-command">Conversation</span>
+      </div>
+      <div class="step-body">
+        <p>The developer describes what they want:</p>
+        <div class="excerpt">
+          <p>"I want a simple static page where I can log daily standups. Three fields: yesterday, today, blockers. Entries are stored in a JSON file. No backend — just a local HTML file I open in my browser. I want to see the last 7 days of entries."</p>
+        </div>
+        <p class="step-note">This conversation is the raw input. It's informal, incomplete, and that's fine — the pipeline's job is to add structure.</p>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 2</span>
+        <h2>Requirements</h2>
+        <span class="step-command">/sdlc draft-user</span>
+      </div>
+      <div class="step-body">
+        <p>The pipeline extracts structured requirements from the conversation:</p>
+        <div class="excerpt">
+          <p><strong>US-001:</strong> As a developer, I can enter yesterday's work, today's plan, and current blockers into a form and save the entry.</p>
+          <p><strong>US-002:</strong> As a developer, I can view the last 7 days of standup entries in reverse chronological order.</p>
+          <p><strong>US-003:</strong> As a developer, I can edit or delete a previous entry.</p>
+          <p><strong>NFR-001:</strong> No server required. All data stored in browser localStorage.</p>
+          <p><strong>NFR-002:</strong> Page loads in under 1 second on any modern browser.</p>
+        </div>
+        <p class="step-note">Notice US-003 — edit/delete wasn't in the original conversation. The gap analysis surfaced it as a likely need and flagged it for review.</p>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 3</span>
+        <h2>Design</h2>
+        <span class="step-command">/sdlc gen-pdr</span>
+      </div>
+      <div class="step-body">
+        <p>The PDR makes concrete technology and architecture decisions:</p>
+        <div class="excerpt">
+          <p><strong>Stack:</strong> Single HTML file, vanilla JS, no build step. CSS in <code>&lt;style&gt;</code> tag.</p>
+          <p><strong>Data model:</strong> <code>localStorage</code> key <code>standup-entries</code>, value is JSON array of <code>{"{"} date, yesterday, today, blockers {"}"}</code> objects.</p>
+          <p><strong>Components:</strong> Entry form (3 textareas + submit), entry list (card per day), delete confirmation modal.</p>
+          <p><strong>Constraints:</strong> No external dependencies. No CDN. Single file, copy-pasteable.</p>
+        </div>
+        <p class="step-note">The PDR made the "single HTML file" decision based on the "no server" NFR and the simplicity of the project. This is documented and traceable — not an implicit assumption.</p>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 4</span>
+        <h2>Plan</h2>
+        <span class="step-command">/sdlc gen-plan + /sdlc finalize</span>
+      </div>
+      <div class="step-body">
+        <p>The plan breaks the design into ordered, independently shippable phases:</p>
+        <div class="excerpt">
+          <table class="mini-table">
+            <thead>
+              <tr><th>Phase</th><th>Goal</th><th>Tasks</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>00</td><td>HTML shell + localStorage read/write</td><td>3</td></tr>
+              <tr><td>01</td><td>Entry form + save to storage</td><td>4</td></tr>
+              <tr><td>02</td><td>Entry list + 7-day display</td><td>3</td></tr>
+              <tr><td>03</td><td>Edit/delete + confirmation</td><td>4</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="step-note">Phase 00 proves the storage mechanism works before building UI. If localStorage has a quirk, you find out in a 3-task phase, not after building the whole app.</p>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 5</span>
+        <h2>Phase Plans</h2>
+        <span class="step-command">/sdlc expand</span>
+      </div>
+      <div class="step-body">
+        <p>Each phase gets a detailed execution plan with context the implementor needs:</p>
+        <div class="excerpt">
+          <p><strong>Phase 01, Task 01.2:</strong> Create entry form with three <code>&lt;textarea&gt;</code> elements (yesterday, today, blockers) and a submit button. On submit, read values, create entry object with <code>date: new Date().toISOString().slice(0,10)</code>, append to array in localStorage, clear form.</p>
+          <p><strong>Pattern:</strong> <code>JSON.parse(localStorage.getItem('standup-entries') || '[]')</code></p>
+          <p><strong>Verification:</strong> Fill form, submit, check localStorage in DevTools, refresh page, verify data persists.</p>
+        </div>
+        <p class="step-note">The phase plan includes the exact code pattern, the verification method, and the specific localStorage key. The implementor doesn't need to make any design decisions.</p>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-header">
+        <span class="step-badge">Step 6</span>
+        <h2>Implementation</h2>
+        <span class="step-command">/sdlc implement</span>
+      </div>
+      <div class="step-body">
+        <p>The agent executes each phase, updating task status with timestamps as it works:</p>
+        <div class="excerpt">
+          <table class="mini-table">
+            <thead>
+              <tr><th>Task</th><th>Status</th><th>Started</th><th>Completed</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>01.1</td><td>Completed</td><td>2:30 PM</td><td>2:32 PM</td></tr>
+              <tr><td>01.2</td><td>Completed</td><td>2:32 PM</td><td>2:38 PM</td></tr>
+              <tr><td>01.3</td><td>Completed</td><td>2:38 PM</td><td>2:41 PM</td></tr>
+              <tr><td>01.4</td><td>Completed</td><td>2:41 PM</td><td>2:43 PM</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="step-note">One commit per phase. Each phase is verified working before moving on. The timestamps create an audit trail showing where time was actually spent.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="section">
+    <div class="callout">
+      <p><strong>From rough idea to 4-phase implementation in minutes.</strong> The pipeline didn't just generate code — it generated requirements, design decisions, a phased plan, and an audit trail. Every decision is documented. Every output is verifiable.</p>
+      <p>Ready to try it? <a href="/getting-started/">Get started</a> or <a href="/workflow/">explore the full workflow</a>.</p>
+    </div>
+  </section>
+</ContentLayout>
+
+<style>
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .step {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-alt);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .step-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--color-heading);
+    flex: 1;
+  }
+
+  .step-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-bg);
+    background: var(--color-accent);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+  }
+
+  .step-command {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius);
+    padding: 0.15rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .step-body {
+    padding: 1.25rem;
+  }
+
+  .step-body > p:first-child {
+    margin-top: 0;
+  }
+
+  .excerpt {
+    background: var(--color-bg);
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .excerpt p {
+    margin: 0.5rem 0;
+  }
+
+  .excerpt p:first-child {
+    margin-top: 0;
+  }
+
+  .excerpt p:last-child {
+    margin-bottom: 0;
+  }
+
+  .step-note {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-bottom: 0;
+  }
+
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .mini-table th,
+  .mini-table td {
+    text-align: left;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .mini-table th {
+    background: var(--color-bg-alt);
+    color: var(--color-heading);
+    font-weight: 600;
+  }
+
+  .mini-table tbody tr:nth-child(even) {
+    background: rgba(30, 41, 59, 0.3);
+  }
+
+  @media (max-width: 480px) {
+    .step-header {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .step-command {
+      font-size: 0.7rem;
+    }
+  }
+</style>

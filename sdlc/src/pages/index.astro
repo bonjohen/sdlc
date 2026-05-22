@@ -1,17 +1,19 @@
 ---
 import ContentLayout from '../layouts/ContentLayout.astro';
 import WorkflowDiagram from '../components/WorkflowDiagram.astro';
-import { siteDescription, siteTitle } from '../config';
+import { siteDescription, siteTitle, repoUrl } from '../config';
 ---
 
 <ContentLayout title={siteTitle} description={siteDescription}>
   <section class="hero">
     <h1 class="hero-title">From Idea<br />to Implementation</h1>
     <p class="hero-subtitle">A prompt-driven SDLC workflow that turns rough software ideas into buildable plans — a structured way to move forward.</p>
+    <p class="status-badge">Working documentation site &middot; SDLC workflow under active refinement</p>
     <div class="hero-ctas">
       <a href="/workflow/" class="btn btn-primary">Explore Workflow</a>
       <a href="/artifacts/" class="btn btn-secondary">View Artifacts</a>
       <a href="/portfolio/" class="btn btn-secondary">Case Study</a>
+      <a href={repoUrl} class="btn btn-secondary">View Repository</a>
     </div>
   </section>
 
@@ -86,6 +88,10 @@ import { siteDescription, siteTitle } from '../config';
         <strong>About This Project</strong>
         <span>What this project demonstrates and who built it</span>
       </a>
+      <a href="/lessons/" class="cta-card">
+        <strong>Lessons Learned</strong>
+        <span>Reusable patterns extracted from building with the pipeline</span>
+      </a>
     </div>
   </section>
 </ContentLayout>
@@ -113,6 +119,17 @@ import { siteDescription, siteTitle } from '../config';
     max-width: 36rem;
     margin: 0 auto 2rem;
     line-height: 1.6;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.01em;
   }
 
   .hero-ctas {

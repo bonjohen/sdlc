@@ -231,6 +231,28 @@ Open  ──>  Started  ──>  Completed
 
 ---
 
+## Phase 11: Second Review Feedback
+
+**Goal:** Address all 5 recommendations from the second site review: repo CTA, Getting Started table fix, end-to-end example page, Lessons promotion, status badge.
+**Depends on:** Phase 10 completed.
+
+| No    | Status | Started (PST) | Completed (PST) | Description |
+|-------|--------|---------------|------------------|-------------|
+| 11.1  | Completed | 2026-05-21 05:30 PM | 2026-05-21 05:31 PM | Set `repoName = "sdlc"` in `src/config.ts` so portfolio "View Repository" link activates; add repo CTA button to homepage hero section |
+| 11.2  | Completed | 2026-05-21 05:31 PM | 2026-05-21 05:32 PM | Fix Getting Started table stray `<code>` tags — replace `{`{NN}`}` with a plain string expression in `src/pages/getting-started.astro` line 108 |
+| 11.3  | Completed | 2026-05-21 05:32 PM | 2026-05-21 05:35 PM | Add end-to-end mini-example: new page `src/pages/example.astro` showing a single narrative walkthrough (idea → draft.user → draft.pdr → final.plan → phase plan → code) with pipeline stage labels |
+| 11.4  | Completed | 2026-05-21 05:35 PM | 2026-05-21 05:36 PM | Promote Lessons page — add Lessons card to homepage CTA grid in `src/pages/index.astro` and add nav link to example page in `src/components/Nav.astro` |
+| 11.5  | Completed | 2026-05-21 05:36 PM | 2026-05-21 05:37 PM | Add project status badge to homepage — a one-line maturity statement below the hero subtitle in `src/pages/index.astro` |
+| 11.6  | Completed | 2026-05-21 05:37 PM | 2026-05-21 05:38 PM | Build (`npm run build`), verify 0 errors, spot-check built HTML for stray tags and correct repo links |
+| 11.7  | Completed | 2026-05-21 05:38 PM | 2026-05-21 05:39 PM | Stage all changes and commit with phase-scoped message |
+
+### Phase 11 Summary
+
+- **Changes:** Set `repoName = "sdlc"` in config.ts activating repo links on portfolio and homepage. Fixed stray `<code>` tags on Getting Started page (template expression fix). Created end-to-end example page (`src/pages/example.astro`) with 6-step daily standup log walkthrough. Added Lessons card to homepage CTA grid. Added Example page to nav. Added pill-shaped status badge to homepage hero. 16 pages build clean.
+- **Commit:** `Phase 11: Second review feedback — repo CTA, example page, lessons promotion, status badge`
+
+---
+
 ## Cross-Phase Requirements
 
 These apply to every phase and must be verified before marking a phase complete:

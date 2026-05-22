@@ -1,5 +1,5 @@
 // Site configuration — update these values as the project evolves
-export const repoName = "";  // Fill when repository name is chosen
+export const repoName = "sdlc";
 export const repoUrl = repoName
   ? `https://github.com/bonjohen/${repoName}`
   : "https://github.com/bonjohen";
