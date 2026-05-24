@@ -39,6 +39,20 @@ When `show prompt` is detected:
 
 This is especially useful for `draft-user`, `draft-pdr`, and `draft-plan`, which are designed to format AI conversation content — the user may be having that conversation in a different tool and needs the prompt text to paste there.
 
+## Commit on Completion
+
+Every subcommand that writes files must commit its output when finished. After the prompt file's instructions are fully executed and all output files are written:
+
+1. Stage only the files produced by this command (e.g., `sdlc/docs/draft.user.md`, `sdlc/plan/phase*/plan.md`).
+2. Commit with a message describing what the command produced. Format: `sdlc {subcommand}: {brief description of output}`. Examples:
+   - `sdlc draft-user: draft user requirements from conversation`
+   - `sdlc gen-pdr: generate draft PDR from user requirements`
+   - `sdlc finalize: finalize user, PDR, and plan documents`
+   - `sdlc expand: generate phase plans 07–13`
+3. Do not push. Do not include unrelated changes.
+
+This applies to: `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, `expand`. The `implement` subcommand handles its own commits per phase (see its prompt file). The `help` subcommand produces no files.
+
 ## Execution
 
 1. Match the first word of `$ARGUMENTS` to a subcommand in the table above.
@@ -46,6 +60,7 @@ This is especially useful for `draft-user`, `draft-pdr`, and `draft-plan`, which
 3. If `$ARGUMENTS` contains `show prompt`, read the prompt file and display it as a code block. Stop.
 4. Read the prompt file listed in the table.
 5. Follow the instructions in that prompt file completely. The prompt file is the authority — this dispatcher only routes to it.
+6. After the prompt file completes, follow the **Commit on Completion** rules above.
 
 ## Implement Options
 
@@ -62,6 +77,21 @@ When routing to `skill/implement.md`:
 - For `/sdlc implement all` — after reading the prompt file, add this instruction: "Execute in autonomous mode. Complete each phase, commit, and immediately proceed to the next phase without waiting for user input."
 - For `/sdlc implement phase NN` — after reading the prompt file, add this instruction: "Execute phase NN specifically, regardless of which phase the plan considers 'next'."
 
+## CLI Commands (run directly in terminal, not through /sdlc)
+
+These are standalone CLI commands installed via `pip install -e .` in the template project (`C:\Projects\template`). They manage project initialization and template provisioning — complementary to the `/sdlc` prompt pipeline.
+
+| Command | Description |
+|---------|-------------|
+| `sdlc init [--remote <url>] [<dir>]` | Initialize SDLC pipeline in a project (copies prompts, creates docs/ and plan/) |
+| `sdlc pull <template> [--target <dir>] [--var K=V ...]` | Pull a project template (copies files, substitutes tokens) |
+| `sdlc list [--format table\|json]` | List available project templates |
+| `sdlc update` | Update cached source repo via git pull |
+
+Use `--source <local-path>` with any command to use a local repo instead of git.
+
+**Workflow integration:** The `/sdlc finalize` prompt recommends a template in `final.pdr.md` (when template data is available). The user then runs `sdlc pull <name>` in their terminal to apply it. The prompt pipeline recommends; the CLI acts.
+
 ## Pipeline Summary (for `help` output)
 
 ```
@@ -72,9 +102,11 @@ Conversation path:          Document path:
   draft-pdr ──┤ → drafts     gen-plan ─┤ → drafts
   draft-plan ─┘                        ┘
                     |
-               finalize → finals
+               finalize → finals (+ template recommendation)
                     |
                  expand → phase plans
                     |
                implement → code
+                    |
+               sdlc pull → apply recommended template (CLI, not /sdlc)
 ```

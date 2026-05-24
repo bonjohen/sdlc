@@ -5,7 +5,7 @@ depends_on: "Phase 01"
 goal: "The workflow page explains all 8 SDLC commands and shows the three workflow paths. Content is sourced from actual SDLC prompt files, not placeholder text. This completes the Minimum Useful Release."
 source_pdr_sections: ["2.1", "2.3", "4.6", "4.7", "5"]
 source_user_stories: ["US-005", "US-006", "US-007", "US-008", "US-009", "US-010", "US-021"]
-status: "open"
+status: "completed"
 ---
 
 # Phase 02: Workflow and Command Pages

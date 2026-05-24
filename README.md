@@ -35,7 +35,6 @@ Conversation path:          Document path:
 ## Repository Layout
 
 ```
-sdlc/
 ├── skill/              ← Prompt files (the pipeline itself)
 │   ├── SKILL.md        ← /sdlc skill dispatcher
 │   ├── draft-user.md   ← Conversation → draft user requirements
@@ -46,10 +45,12 @@ sdlc/
 │   ├── finalize.md     ← Three drafts → three finals (gap analysis, traceability)
 │   ├── expand.md       ← Final plan → per-phase execution plans
 │   └── implement.md    ← Execute phases, write code, commit
-└── sdlc/               ← I2I marketing site (built using this pipeline)
-    ├── docs/           ← Generated SDLC documents (drafts and finals)
-    ├── plan/           ← Per-phase execution plans
-    └── src/            ← Astro site source
+├── docs/lessons/       ← Reusable patterns extracted from this project
+├── sdlc/               ← I2I marketing site (built using this pipeline)
+│   ├── docs/           ← Generated SDLC documents (drafts and finals)
+│   ├── plan/           ← Per-phase execution plans
+│   └── src/            ← Astro site source
+└── .github/workflows/  ← GitHub Pages deployment
 ```
 
 ## Quick Start

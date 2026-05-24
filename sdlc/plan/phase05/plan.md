@@ -5,7 +5,7 @@ depends_on: "Phase 04"
 goal: "The site is production-ready for public sharing. All SEO metadata in place, accessibility audit passes, custom domain config verified, and content accuracy confirmed. This completes the First Full Feature Release."
 source_pdr_sections: ["1.2", "5", "6", "7", "8", "11", "14"]
 source_user_stories: ["NFR-001", "NFR-003", "NFR-004", "NFR-005", "NFR-006", "NFR-010"]
-status: "open"
+status: "completed"
 ---
 
 # Phase 05: Polish, Accessibility, SEO, and Custom Domain Readiness

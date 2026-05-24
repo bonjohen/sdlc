@@ -5,8 +5,8 @@ depends_on: "Phase 04 (all content pages exist)"
 goal: "The site has a distinctive visual identity (dark slate/accent color theme), a compelling hero section, clickable workflow stage cards, a Without/With comparison table, and sharper marketing copy. The site feels like a polished technical product, not a README rendered as pages."
 source_pdr_sections: ["4.5", "5", "12"]
 source_user_stories: ["US-001", "US-002", "US-003", "US-004"]
-source_document: "sdlc/docs/first-review-feedback.md"
-status: "open"
+source_document: "sdlc/plan/phase10/first-review-feedback.md"
+status: "completed"
 ---
 
 # Phase 10: Design Refresh — Visual Identity and Marketing Clarity

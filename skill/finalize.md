@@ -279,6 +279,48 @@ project/
 | US-001 | 4.1 | SignalService | POST /api/signals |
 ```
 
+### Template Recommendation (Step 2 addendum)
+
+After writing all other PDR sections, check for template data that can inform a recommendation:
+
+1. Look for template manifests at `~/.sdlc/repo/examples/*/template.yaml`. If `~/.sdlc/repo` does not exist (no SDLC CLI cache), **skip this section entirely** — do not mention templates at all. The pipeline must work identically for users who haven't set up the CLI.
+
+2. If template manifests are found, read each manifest's `type_id`, `name`, `description`, and `layers` fields. Compare the project's intent, architecture, and stack (from the user requirements and PDR content) against each template's `type_id` and characteristics.
+
+3. Write a `## Recommended Template` section at the end of `final.pdr.md`:
+
+   **If a template matches with high or medium confidence:**
+
+   ```markdown
+   ## Recommended Template
+
+   **Template:** {template name}
+   **Confidence:** {High|Medium}
+   **Layers:** {comma-separated layer list}
+
+   **Reasoning:** {1-2 sentences explaining why this template matches the project's intent, architecture, and stack.}
+
+   **To apply:**
+   ```
+   sdlc pull {template_id} [--var KEY=VALUE ...]
+   ```
+
+   Review the template contents with `sdlc list --format json` before pulling.
+   ```
+
+   **If no template matches:**
+
+   ```markdown
+   ## Recommended Template
+
+   No template match found for this project's characteristics.
+   Browse available templates with `sdlc list`.
+   ```
+
+4. **This section is informational only.** The finalize prompt does NOT execute `sdlc pull`. It recommends; the user decides and acts.
+
+5. **Backward compatibility:** If `~/.sdlc/repo/` does not exist, omit the `## Recommended Template` section entirely. No error, no warning. The rest of `final.pdr.md` is unchanged.
+
 ### Rules for Step 2
 
 - **Every user story must trace to at least one component.** The traceability matrix (Section 9) is not optional. If a user story has no corresponding design, either add the design or flag it as deferred with a reason.

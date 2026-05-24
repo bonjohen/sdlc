@@ -5,7 +5,7 @@ depends_on: "Phase 02"
 goal: "A developer can understand *why* the workflow is staged and *how* to start using it. Both pages are complete and linked in navigation."
 source_pdr_sections: ["5"]
 source_user_stories: ["US-011", "US-012", "US-013"]
-status: "open"
+status: "completed"
 ---
 
 # Phase 03: Education and Getting-Started Pages

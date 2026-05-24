@@ -5,7 +5,7 @@ depends_on: "Phase 00"
 goal: "The site has a functional homepage with the workflow-first design, responsive navigation, and all shared layout components. The WorkflowDiagram renders correctly across viewport sizes."
 source_pdr_sections: ["4.1", "4.2", "4.3", "4.4", "4.5", "5", "6", "12"]
 source_user_stories: ["US-001", "US-002", "US-003", "US-004", "US-022"]
-status: "open"
+status: "completed"
 ---
 
 # Phase 01: Homepage and Core Layout

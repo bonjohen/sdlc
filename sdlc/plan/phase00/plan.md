@@ -5,7 +5,7 @@ depends_on: "none"
 goal: "The Astro project builds, deploys to GitHub Pages, and the configuration variable system works. No real content yet — just proof that the pipeline is operational."
 source_pdr_sections: ["1.2", "1.3", "3"]
 source_user_stories: ["US-020"]
-status: "open"
+status: "completed"
 ---
 
 # Phase 00: Project Scaffold and Deployment Pipeline

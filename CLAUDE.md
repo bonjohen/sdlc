@@ -11,7 +11,6 @@ The pipeline turns a software idea into implementation-ready plans and then into
 ## Repository Layout
 
 ```
-sdlc/
 ├── skill/              ← Prompt files (the pipeline itself)
 │   ├── SKILL.md        ← /sdlc skill dispatcher (routes subcommands to prompts)
 │   ├── prompt-instructions.md  ← Pipeline overview, file layout, usage paths
@@ -23,12 +22,15 @@ sdlc/
 │   ├── finalize.md     ← Three drafts → three finals (gap analysis, traceability)
 │   ├── expand.md       ← Final plan → per-phase execution plans
 │   └── implement.md    ← Execute phases, update task state, write code, commit
-└── sdlc/
-    ├── docs/           ← Generated documents (drafts and finals)
-    │   ├── draft.user.md / draft.pdr.md / draft.plan.md
-    │   └── final.user.md / final.pdr.md / final.plan.md
-    └── plan/           ← Per-phase execution plans
-        └── phase{NN}/plan.md
+├── docs/lessons/       ← Reusable patterns extracted from this project
+├── sdlc/               ← I2I marketing site (Astro) + SDLC docs for this project
+│   ├── docs/           ← Generated documents (drafts and finals)
+│   │   ├── draft.user.md / draft.pdr.md / draft.plan.md
+│   │   └── final.user.md / final.pdr.md / final.plan.md
+│   ├── plan/           ← Per-phase execution plans
+│   │   └── phase{NN}/plan.md
+│   └── src/            ← Astro site source
+└── .github/workflows/  ← GitHub Pages deployment
 ```
 
 ## The Pipeline
@@ -65,6 +67,10 @@ The pipeline is invoked as a Claude Code skill via `/sdlc <subcommand>`:
 mkdir -p ~/.claude/skills/sdlc
 ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 ```
+
+## Project Boundary
+
+**Never create, modify, or delete files outside of this project (`C:\Projects\sdlc`) unless the user explicitly requests it in the current message.** The additional working directories (`D:\Archive`, `C:\Users\boen3`) are available for reading/reference only. Other projects under `C:\Projects\` (e.g., `C:\Projects\template`) are separate repositories — do not write to them even if the SDLC pipeline references them.
 
 ## Key Conventions
 
