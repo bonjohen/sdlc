@@ -82,6 +82,19 @@ ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 - **One commit per phase**: Implementation commits after each phase completes (all tasks done, verification green). Never commits partial phases or batches multiple phases.
 - **PST timestamps**: All Started/Completed timestamps use Pacific Standard Time, format `YYYY-MM-DD HH:MM AM/PM`.
 
+## Context Discipline During Implementation
+
+**Before reaching for any tool — Read, Grep, Glob, Bash, or Agent — check what you already have.** The phase plan files (`sdlc/plan/phase{NN}/plan.md`) are intentionally designed to contain everything needed to implement that phase: file paths, schema definitions, code patterns, imports, design notes, and verification steps. The expand stage puts this information there precisely so that implementation does not require exploratory reads, codebase scans, or research subagents.
+
+When you are executing a phase:
+
+1. **Read the phase plan's Context section first.** It is your implementation guide. If the answer is there, act on it.
+2. **Check conversation context second.** Files you have already read this session, plan state you have already parsed, tool output you have already received — do not re-fetch any of it.
+3. **Read source files only when the phase plan tells you to** (e.g., "modify `src/foo.py`" means read that file) **or when you are genuinely missing information** that is not in the phase plan, the PDR, or the conversation.
+4. **Never launch Explore subagents or project-wide searches before starting implementation work.** The phase plan already scoped what you need. If it didn't, that is a gap to flag — not a license to scan the entire codebase.
+
+Unnecessary lookups waste context window, delay execution, and signal that the phase plan's Context section was ignored. Every Read/Grep/Glob/Agent call that retrieves information already available is a defect in execution, not diligence.
+
 ## Implement Hooks
 
 Two hooks enforce the `/sdlc implement` workflow:
