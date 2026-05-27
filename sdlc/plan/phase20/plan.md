@@ -14,12 +14,12 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 20.1 | Open | | | Create `~/.claude/hooks/pre-implement-status-guard.py` with the decision tree from PDR 4.1: parse stdin JSON, normalize path, check plan file pattern, read sentinel, check project membership, parse task table, allow or block. All error paths exit 0 (fail open). |
-| 20.2 | Open | | | Implement task table parsing per PDR 4.1: find header row with `Status` column, identify column index, scan data rows for `Started` value. Handle multiple tables, malformed tables (fail open), empty files. |
-| 20.3 | Open | | | Implement plan file detection: paths matching `*/plan/phase*/plan.md`, `*/docs/final.plan.md`, `*/docs/draft.*.md` are always allowed (exit 0). |
-| 20.4 | Open | | | Implement path normalization for Windows (NFR-003): replace backslashes with forward slashes, handle both `C:\` and `/c/` prefixes, resolve to absolute path. |
-| 20.5 | Open | | | Register the hook in `~/.claude/settings.json` with `Edit` and `Write` matchers per PDR 4.1. Two new PreToolUse entries pointing to `python C:/Users/boen3/.claude/hooks/pre-implement-status-guard.py`. **Note: writes to `~/.claude/settings.json` (outside project directory) — authorized by user.** |
-| 20.6 | Open | | | Manual test: (a) no sentinel, edit a `.py` file, allowed; (b) create sentinel pointing to a plan with a `Started` task, edit source, allowed; (c) create sentinel pointing to a plan with no `Started` task, edit source, blocked with error message; (d) edit `phase{NN}/plan.md`, allowed regardless; (e) malformed sentinel JSON, allowed (fail open); (f) sentinel for different project, allowed. |
+| 20.1 | Completed | 2026-05-27 01:15 PM | 2026-05-27 01:18 PM | Create `~/.claude/hooks/pre-implement-status-guard.py` with the decision tree from PDR 4.1: parse stdin JSON, normalize path, check plan file pattern, read sentinel, check project membership, parse task table, allow or block. All error paths exit 0 (fail open). |
+| 20.2 | Completed | 2026-05-27 01:18 PM | 2026-05-27 01:19 PM | Implement task table parsing per PDR 4.1: find header row with `Status` column, identify column index, scan data rows for `Started` value. Handle multiple tables, malformed tables (fail open), empty files. |
+| 20.3 | Completed | 2026-05-27 01:19 PM | 2026-05-27 01:19 PM | Implement plan file detection: paths matching `*/plan/phase*/plan.md`, `*/docs/final.plan.md`, `*/docs/draft.*.md` are always allowed (exit 0). |
+| 20.4 | Completed | 2026-05-27 01:19 PM | 2026-05-27 01:20 PM | Implement path normalization for Windows (NFR-003): replace backslashes with forward slashes, handle both `C:\` and `/c/` prefixes, resolve to absolute path. |
+| 20.5 | Completed | 2026-05-27 01:20 PM | 2026-05-27 01:21 PM | Register the hook in `~/.claude/settings.json` with `Edit` and `Write` matchers per PDR 4.1. Two new PreToolUse entries pointing to `python C:/Users/boen3/.claude/hooks/pre-implement-status-guard.py`. **Note: writes to `~/.claude/settings.json` (outside project directory) — authorized by user.** |
+| 20.6 | Completed | 2026-05-27 01:21 PM | 2026-05-27 01:25 PM | Manual test: (a) no sentinel, edit a `.py` file, allowed; (b) create sentinel pointing to a plan with a `Started` task, edit source, allowed; (c) create sentinel pointing to a plan with no `Started` task, edit source, blocked with error message; (d) edit `phase{NN}/plan.md`, allowed regardless; (e) malformed sentinel JSON, allowed (fail open); (f) sentinel for different project, allowed. |
 
 ## Context
 
@@ -156,7 +156,5 @@ To disable this hook (not recommended during /sdlc implement):
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Created `~/.claude/hooks/pre-implement-status-guard.py` with 8-step decision tree (parse stdin, normalize path, plan file detection, sentinel read, project membership, task table parsing, allow/block). Registered hook in `~/.claude/settings.json` with Edit and Write matchers. All error paths fail open. Verified with 6 manual test scenarios.
+- **Commit:** `Phase 20: Hook & Sentinel — implement status guard hook with fail-open design`
