@@ -82,14 +82,17 @@ ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 - **One commit per phase**: Implementation commits after each phase completes (all tasks done, verification green). Never commits partial phases or batches multiple phases.
 - **PST timestamps**: All Started/Completed timestamps use Pacific Standard Time, format `YYYY-MM-DD HH:MM AM/PM`.
 
-## Implement Status Guard Hook
+## Implement Hooks
 
-A `PreToolUse` hook at `~/.claude/hooks/pre-implement-status-guard.py` enforces status-before-implementation during `/sdlc implement`. It blocks Edit/Write calls to source files when no task is marked `Started` in the active phase plan.
+Two hooks enforce the `/sdlc implement` workflow:
 
-- **Activated by:** sentinel file at `~/.claude/state/sdlc-implement.json` (created automatically by the implement prompt)
+**Checkpoint hook** (`~/.claude/hooks/sdlc-implement-checkpoint.py`) — `UserPromptSubmit` hook. Detects `/sdlc implement` in the user's prompt and automatically creates the sentinel file at `~/.claude/state/sdlc-implement.json`. If a sentinel already exists for the same project, it keeps it. This ensures the guard hook is always active during implement — not dependent on prompt compliance.
+
+**Status guard hook** (`~/.claude/hooks/pre-implement-status-guard.py`) — `PreToolUse` hook (Edit/Write matchers). Blocks source file edits when no task is marked `Started` in the active phase plan. Plan file edits are always allowed. Fails open on all errors.
+
+- **Activated by:** sentinel file at `~/.claude/state/sdlc-implement.json` (created by the checkpoint hook)
 - **Deactivated by:** deleting the sentinel: `rm ~/.claude/state/sdlc-implement.json`
-- **Behavior:** Blocks source file edits only. Plan file edits always allowed. Fails open on all errors (never blocks legitimate work due to a bug).
-- **Registered in:** `~/.claude/settings.json` (Edit and Write matchers)
+- **Registered in:** `~/.claude/settings.json`
 
 ## When Editing Prompts
 

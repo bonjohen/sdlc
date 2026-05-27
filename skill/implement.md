@@ -54,27 +54,29 @@ Scan the plan for any task with status `Open` or `Started`:
 
 ## 2. Sentinel Management
 
-The sentinel file activates the `pre-implement-status-guard.py` hook, which blocks source file edits when no task is marked `Started`. Managing this file is part of the implement workflow.
+The sentinel file activates the `pre-implement-status-guard.py` hook, which blocks source file edits when no task is marked `Started`.
 
 **Sentinel path:** `~/.claude/state/sdlc-implement.json`
 
-### CREATE — at implement start
+### CREATE — automatic via hook
 
-After prerequisites pass, create the sentinel:
+The `sdlc-implement-checkpoint.py` UserPromptSubmit hook creates the sentinel automatically when `/sdlc implement` is detected in the user's prompt. By the time this prompt executes, the sentinel should already exist.
 
-```json
+**Verify the sentinel exists** before proceeding. If it does not (hook failed or was not installed), create it manually:
+
+```bash
+mkdir -p ~/.claude/state && cat > ~/.claude/state/sdlc-implement.json << EOF
 {
   "project_root": "{absolute path to project root, forward slashes}",
   "phase_plan": "sdlc/plan/phase{NN}/plan.md",
   "started_at": "{PST timestamp}"
 }
+EOF
 ```
-
-Use the Bash tool: `mkdir -p ~/.claude/state && cat > ~/.claude/state/sdlc-implement.json << 'EOF' ... EOF`
 
 ### UPDATE — on phase advance (multi-phase modes)
 
-When advancing to the next phase, update `phase_plan` to point to the new phase's plan file.
+When advancing to the next phase, update the sentinel's `phase_plan` field to point to the new phase's plan file. This keeps the guard hook checking the correct phase.
 
 ### DELETE — on completion or stop
 
@@ -87,7 +89,7 @@ Use: `rm ~/.claude/state/sdlc-implement.json`
 
 ### Orphaned sentinels
 
-If the session crashes, the sentinel file lingers. The next `/sdlc implement` invocation overwrites it. Users can manually clean up with `rm ~/.claude/state/sdlc-implement.json`.
+If the session crashes, the sentinel file lingers. The next `/sdlc implement` invocation overwrites it via the checkpoint hook. Users can manually clean up with `rm ~/.claude/state/sdlc-implement.json`.
 
 ---
 
