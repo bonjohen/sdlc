@@ -136,6 +136,10 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 
 **FR-13:** The agent must never mark a task `Completed` without verifying its described work exists on disk (files, functions, tests).
 
+### Hook-Based Enforcement
+
+**FR-20:** A `PreToolUse` hook must enforce the status-before-implementation rule at runtime. When the agent attempts to edit or create a source file during `/sdlc implement`, the hook must verify that the current task in the active phase plan file is marked `Started`. If no task is marked `Started`, the hook must block the tool call and return an error directing the agent to update the phase plan first. This is the runtime enforcement of FR-1 — prompt instructions tell the agent what to do; the hook prevents it from proceeding if it didn't.
+
 ### Dispatcher Enhancements
 
 **FR-14:** The `SKILL.md` dispatcher must support a fourth implement mode: `/sdlc implement phase NN all` (start at phase NN, continue through all remaining phases).
@@ -176,10 +180,11 @@ No new data storage. All state is written to existing plan file locations (`sdlc
 - [ ] **AC-8:** The user can observe real-time task progress by reading `phase{NN}/plan.md` (step-level) and phase-level progress by reading `final.plan.md`.
 - [ ] **AC-9:** If context exceeds 50% mid-phase, the agent self-compacts before continuing.
 - [ ] **AC-10:** If context remains above 50% after compaction, the agent stops cleanly and instructs the user to `/clear` and re-invoke.
+- [ ] **AC-11:** If the agent attempts to edit a source file without a `Started` task in the phase plan, the `PreToolUse` hook blocks the edit and returns an error message directing the agent to update the plan first.
 
 ## 11. Concerns for Physical Design
 
-1. **FR-1/FR-2 rely on prompt compliance, not enforcement.** The HARD RULE callouts and violation definitions strengthen the instruction, but there is no runtime mechanism to verify the agent actually updated plan files before writing code. The PDR should consider whether a hook-based enforcement is feasible (e.g., a `PreToolUse` hook that checks plan file timestamps).
+1. **FR-20 hook design.** The PDR must define: which tool calls the hook intercepts (Edit, Write, Bash, or all three), how it identifies "source files" vs plan files, how it locates the active phase plan, and how it determines whether a `Started` task exists. The hook follows the pattern of the existing push guard (`~/.claude/hooks/pre-bash-git-push-guard.py`) — block and explain, never silently pass.
 
 2. **FR-8 depends on `/compact` effectiveness.** The quality of context shedding after `/compact` varies — the compaction model may retain more phase N context than desired. The PDR should define what "successful compaction" looks like and whether the 50% threshold needs tuning based on observed behavior.
 
