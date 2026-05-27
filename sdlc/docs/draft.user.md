@@ -33,7 +33,7 @@ The purpose of this work is to harden the implement prompt so that plan files ar
 
 ## 3. Core Concept
 
-The plan file is a state machine. Every task transition (Open → Started → Completed) must be written to disk before the agent does anything else. Git commits are the durable phase boundary. Context resets between phases are deliberate, not accidental. The agent reads only what it needs for the current phase.
+Two plan files serve different audiences at different granularities. The phase plan (`phase{NN}/plan.md`) is the step-level state machine — every task transition (Open → Started → Completed) must be written to disk before the agent does anything else. The master plan (`final.plan.md`) is the phase-level dashboard — it tracks which phases are not_started, in_progress, complete, or blocked, and accumulates phase summaries as work completes. The master plan is updated once per phase, not per task. Git commits are the durable phase boundary. Context resets between phases are deliberate, not accidental. The agent reads only what it needs for the current phase.
 
 ## 4. Primary User Goal
 
@@ -64,11 +64,11 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 2. Agent reads `final.plan.md`, identifies next incomplete phase.
 3. Agent reads `phase{NN}/plan.md` for the target phase.
 4. For each task in the phase:
-   a. Agent edits BOTH plan files: Status → `Started`, records PST timestamp. **This happens before any implementation work.**
+   a. Agent edits `phase{NN}/plan.md`: Status → `Started`, records PST timestamp. **This happens before any implementation work.**
    b. Agent implements the task (writes code, creates files, runs commands).
-   c. Agent edits BOTH plan files: Status → `Completed`, records PST timestamp. **This happens immediately after implementation, before moving to next task.**
+   c. Agent edits `phase{NN}/plan.md`: Status → `Completed`, records PST timestamp. **This happens immediately after implementation, before moving to next task.**
 5. Agent runs validation (tests, lint).
-6. Agent writes Phase Summary block in `final.plan.md`.
+6. Agent updates `final.plan.md`: phase status → `complete`, writes Phase Summary block, records completion timestamp and commit hash.
 7. Agent commits all changes for the phase.
 
 ### Flow 2: Multi-phase execution with context lifecycle
@@ -88,7 +88,7 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 
 1. Session is interrupted (crash, compaction, user abort) mid-phase.
 2. User starts new session, invokes `/sdlc implement`.
-3. Agent reads both plan files. Finds tasks marked `Started` (in-progress when session died).
+3. Agent reads `final.plan.md` to find the in-progress phase, then reads that phase's `plan.md`. Finds tasks marked `Started` (in-progress when session died).
 4. For each `Started` task: agent verifies work exists on disk (checks files, functions, tests described by the task).
    - If work exists: mark `Completed` with estimated timestamp and note `[recovered from interrupted session]`.
    - If work does not exist: leave as `Started`, redo the task.
@@ -101,16 +101,15 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 
 ### Status Update Enforcement
 
-**FR-1:** The agent must update task status in BOTH `final.plan.md` and `phase{NN}/plan.md` to `Started` with a PST timestamp BEFORE doing any implementation work for that task. No code, file creation, or command execution for the task may occur before both plan files show `Started`.
+**FR-1:** The agent must update task status in `phase{NN}/plan.md` to `Started` with a PST timestamp BEFORE doing any implementation work for that task. No code, file creation, or command execution for the task may occur before the phase plan file shows `Started`.
 
-**FR-2:** The agent must update task status in BOTH plan files to `Completed` with a PST timestamp IMMEDIATELY after finishing the task's implementation work. The update must be the very next action — not deferred to after verification, not batched with other tasks.
+**FR-2:** The agent must update task status in `phase{NN}/plan.md` to `Completed` with a PST timestamp IMMEDIATELY after finishing the task's implementation work. The update must be the very next action — not deferred to after verification, not batched with other tasks.
 
-**FR-3:** When updating both plan files, the agent must edit the phase plan first, then the master plan, as two consecutive Edit tool calls with no interleaved work.
+**FR-3:** The master plan (`final.plan.md`) is updated once per phase, not per task. At phase completion (after all tasks are done and validation passes), the agent updates the phase's row in `final.plan.md` with: status → `complete`, completion timestamp, commit hash, and appends the phase summary.
 
 **FR-4:** The following are defined status update violations that the implement prompt must explicitly prohibit:
-- Batching updates (writing code for multiple tasks before updating any plan file)
+- Batching updates (writing code for multiple tasks before updating the phase plan file)
 - Skipping the `Started` state (going directly from `Open` to `Completed`)
-- Updating one plan file but not the other
 - Deferring updates to "after verification"
 
 ### Phase Isolation
@@ -133,7 +132,7 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 
 ### Crash Recovery
 
-**FR-12:** When resuming a phase that was interrupted, the agent must read both plan files and verify the on-disk state of every `Started` task before continuing. Tasks with verified work are marked `Completed` with recovery notes. Tasks without verified work are re-implemented.
+**FR-12:** When resuming a phase that was interrupted, the agent must read the phase plan file and verify the on-disk state of every `Started` task before continuing. Tasks with verified work are marked `Completed` with recovery notes. Tasks without verified work are re-implemented.
 
 **FR-13:** The agent must never mark a task `Completed` without verifying its described work exists on disk (files, functions, tests).
 
@@ -147,18 +146,16 @@ Additionally, the dispatcher must accept plan file paths as arguments:
 
 ### Plan File Structure
 
-**FR-17:** `final.plan.md` must serve as the external state ledger containing, for each phase: Phase ID, phase plan path, status (not_started | in_progress | complete | blocked), started timestamp, completed timestamp, summary, validation results, commit hash, and next phase pointer.
+**FR-17:** After the `expand` stage generates phase plans, the detailed task tables must be moved out of `final.plan.md` into the respective `phase{NN}/plan.md` files. Post-expand, `final.plan.md` must contain primarily a phase status table (Phase ID, phase plan path, status, started timestamp, completed timestamp, commit hash) and a growing collection of phase summary results appended as phases complete. The master plan is a dashboard, not a task list.
 
-**FR-18:** Each `phase{NN}/plan.md` must contain: phase goal, startup memory file path, task list, acceptance criteria, files expected to change, validation commands, and completion update instructions.
-
-**FR-19:** Each phase may include a `phase-N-startup-memory.md` containing only the focused context needed for that phase — not the full project context.
+**FR-18:** Each `phase{NN}/plan.md` must contain: phase goal, task list (with full task-level status tracking), acceptance criteria, files expected to change, validation commands, and completion update instructions. The phase plan is the authoritative source for step-level status during implementation.
 
 ## 8. Non-Goals
 
 - **Changing the plan file format.** Markdown tables, status values (`Open`, `Started`, `Completed`, `Blocked`), and PST timestamp format remain as-is.
 - **Changing the one-commit-per-phase rule.** Each phase still produces exactly one commit.
 - **Changing the task execution order.** Tasks within a phase are still executed top-to-bottom.
-- **Modifying other pipeline prompts.** `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, and `expand` are not affected.
+- **Modifying most pipeline prompts.** `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, and `finalize` are not affected. `expand` is affected — it must restructure the master plan when generating phase plans (see FR-17).
 - **Automated `/clear` or `/rewind`.** The agent cannot invoke these programmatically in interactive mode. Context management uses `/compact` with fallback to instructing the user to `/clear`.
 - **Agent SDK integration.** The checkpoint research (`docs/checkpoint.md`) explored SDK-level file checkpointing, but this work targets interactive Claude Code mode only. SDK integration is a separate future effort.
 - **Concurrent session support.** Single-session execution is assumed.
@@ -169,14 +166,14 @@ No new data storage. All state is written to existing plan file locations (`sdlc
 
 ## 10. Acceptance Criteria
 
-- [ ] **AC-1:** During a single-phase run, every task shows a distinct Edit tool call updating both plan files BEFORE the task's first implementation action and AFTER the task's last implementation action.
+- [ ] **AC-1:** During a single-phase run, every task shows a distinct Edit tool call updating the phase plan file BEFORE the task's first implementation action and AFTER the task's last implementation action. The master plan is updated once at phase completion.
 - [ ] **AC-2:** If a session is interrupted mid-phase and resumed with `/sdlc implement`, the agent correctly identifies `Started` tasks, verifies on-disk state, and continues without re-doing completed work.
 - [ ] **AC-3:** During a 3+ phase "all" run, context usage drops measurably after each phase transition (visible in compact behavior). Phase N+1 starts with only bootstrap data plus phase N+1 plan in context.
 - [ ] **AC-4:** The agent never reads a future phase's `plan.md` before committing the current phase.
 - [ ] **AC-5:** The agent never launches an Explore subagent or project-wide scan before beginning implementation of the current phase.
 - [ ] **AC-6:** `/sdlc implement phase 03 all` is correctly dispatched as "start at phase 03, continue all remaining."
 - [ ] **AC-7:** `/sdlc implement sdlc/plan/phase03/plan.md` is correctly parsed and dispatched as phase 03.
-- [ ] **AC-8:** The user can observe real-time task progress by reading either plan file during agent execution.
+- [ ] **AC-8:** The user can observe real-time task progress by reading `phase{NN}/plan.md` (step-level) and phase-level progress by reading `final.plan.md`.
 - [ ] **AC-9:** If context exceeds 50% mid-phase, the agent self-compacts before continuing.
 - [ ] **AC-10:** If context remains above 50% after compaction, the agent stops cleanly and instructs the user to `/clear` and re-invoke.
 
@@ -186,12 +183,10 @@ No new data storage. All state is written to existing plan file locations (`sdlc
 
 2. **FR-8 depends on `/compact` effectiveness.** The quality of context shedding after `/compact` varies — the compaction model may retain more phase N context than desired. The PDR should define what "successful compaction" looks like and whether the 50% threshold needs tuning based on observed behavior.
 
-3. **FR-3 specifies edit order (phase plan first, then master plan).** If the agent crashes between the two edits, the phase plan shows `Started` but the master plan still shows `Open`. The recovery protocol (FR-12) handles this, but the PDR should verify that partial-update states are correctly handled.
+3. **FR-17 requires `expand` to restructure `final.plan.md`** by moving task tables into phase plans and leaving the master plan as a status dashboard. The PDR must define the exact post-expand format of `final.plan.md` — column set for the phase status table, where phase summaries accumulate, and how the transition from pre-expand (full task tables) to post-expand (status table only) works.
 
-4. **FR-17 expands `final.plan.md` with new fields** (commit hash, validation results, next phase pointer). The existing plan format may not have these columns. The PDR must define whether this is a format migration or whether these fields are added only to newly generated plans.
+4. **FR-17's new master plan columns** (commit hash, validation results) don't exist in the current format. The PDR must define whether this is a format migration applied to all plans or only to newly generated plans.
 
-5. **FR-19 introduces `startup-memory.md` per phase.** This is a new artifact not currently produced by `expand.md`. The PDR must decide whether `expand.md` generates these files or whether `implement.md` creates them on-the-fly from the phase plan's Context section.
-
-6. **The two-file synchronization (FR-3) was identified as the primary friction source** in the refactor analysis. Option A (single-file authority during execution, sync at phase boundary) was considered and rejected because the user monitors both files in real-time. The PDR should validate this decision — if monitoring only happens via `final.plan.md`, single-file authority during execution would halve the per-task update cost.
+5. **The two-level monitoring model** (master plan = phase resolution, phase plans = step resolution) eliminates the per-task two-file sync friction from the original refactor analysis. The PDR should confirm that the `expand.md` prompt changes and the `implement.md` master-plan-at-phase-completion rule are sufficient to keep both files consistent without per-task dual updates.
 
 7. **FR-15 path parsing must handle both forward and backslashes** on Windows. The dispatcher receives user input that may use either separator style. The PDR should specify normalization behavior.
