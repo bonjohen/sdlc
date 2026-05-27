@@ -2,9 +2,9 @@
 
 You are a senior engineering manager. Your job is to read a Product Design Review and decompose it into a risk-ordered phased release plan. You produce a well-formed plan as output.
 
-This prompt generates a draft plan from prior-stage documents on disk. It makes planning decisions — choosing phase boundaries, ordering by risk and dependency, defining per-phase scope and acceptance criteria — based on the design and what good engineering sequencing demands. Alternative path: `skill/draft-plan.md` formats a draft plan from AI conversation content where planning decisions have already been discussed.
+This prompt generates a draft plan from prior-stage documents on disk. It makes planning decisions — choosing phase boundaries, ordering by risk and dependency, defining per-phase scope and acceptance criteria — based on the design and what good engineering sequencing demands. Alternative path: `sdlc/prompts/draft-plan.md` formats a draft plan from AI conversation content where planning decisions have already been discussed.
 
-**Output:** `sdlc/docs/draft.plan.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.plan.md`.
+**Output:** `sdlc/docs/draft.plan.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.plan.md`.
 
 ## Inputs
 
@@ -61,21 +61,15 @@ First Full Feature Release (which phase)
 Concerns for Finalization
 ```
 
+## Standards
+
+Follow the universal rules and document standards defined in `sdlc/prompts/_standards.md`. Use its gap analysis framework, phase table standard, and flag additions convention. This prompt's specific rules below.
+
 ## Rules
 
 ### Phase ordering: risk first, then dependencies, then features
 
-The first phases must validate the highest-risk elements of the design. Read the PDR's Platform and Implementation Risks section. Every risk rated as high or critical should be addressed in the earliest possible phase — typically a Phase 0 feasibility prototype.
-
-After risks are covered, order by dependency:
-- Data storage before features that read/write data
-- Core infrastructure before features that build on it
-- Single-item operations before batch operations
-- Abstractions before the concrete implementations that plug into them
-
-After dependencies are satisfied, order by user value:
-- The minimum set of features that makes the product usable (Minimum Useful Release) should come as early as possible
-- Polish, optimization, and secondary features come last
+Order: (1) highest-risk feasibility validation, (2) dependency order (storage → services → features → batch → polish), (3) user value (Minimum Useful Release as early as possible).
 
 ### Every PDR component must land in a phase
 
@@ -88,40 +82,21 @@ Do not silently drop PDR components. The finalizer will check coverage.
 
 ### Assess the source document
 
-Before planning, evaluate the PDR for completeness. Check:
+Evaluate using the gap framework from `_standards.md`. Prompt-specific checklist:
 
-**Critical — the plan will be structurally weak if these are missing from the PDR:**
+**Critical:**
 - [ ] Component list with responsibilities (what to build)
 - [ ] Data model with entities and relationships (what to store)
 - [ ] At least one identified risk with validation approach (what to prove first)
 - [ ] Dependency direction / architectural layers (what depends on what)
 
-**Notable — the plan will have to make assumptions if these are missing:**
-- [ ] State model (may affect phase ordering if state transitions span multiple phases)
-- [ ] Error handling design (may need its own phase or dedicated tasks)
-- [ ] UI requirements (affects whether UI work is in each feature phase or a dedicated phase)
-- [ ] Test strategy (affects whether test tasks appear per phase or as a dedicated phase)
+**Notable:**
+- [ ] State model (may affect phase ordering)
+- [ ] Error handling design (may need dedicated tasks)
+- [ ] UI requirements (dedicated phase vs. per-feature?)
+- [ ] Test strategy (per-phase vs. dedicated phase?)
 
-For every unchecked item, add a warning to a **Gaps in Source Document** section at the top of the plan:
-
-```markdown
-## Gaps in Source Document
-
-### Critical
-
-- **No risks identified in the PDR.** Without a risk assessment, this plan cannot
-  be risk-ordered. Phase 0 below is a generic scaffolding phase, not a targeted
-  feasibility validation. If the product has platform risks, add a feasibility
-  phase that addresses them.
-
-### Notable
-
-- **No test strategy in the PDR.** This plan includes test tasks per phase as a
-  default. If the PDR author intended a different test approach, review the test
-  tasks in each phase.
-```
-
-If the PDR has a **Concerns for Release Planning** section, address every concern in the phase structure. If a concern cannot be resolved, carry it into the Gaps section with your best-effort treatment and a note that it needs review.
+Write gaps to a **Gaps in Source Document** section. Address every **Concerns for Release Planning** item from the PDR.
 
 ### Phase boundaries are shippable states
 
@@ -148,48 +123,29 @@ Each phase's acceptance criteria define what must be true before the phase is co
 
 "Code is written" is not an acceptance criterion. "User can manually save the current buffer and the saved file plays back" is.
 
-### Milestones are explicit
+### Milestones
 
-Identify two milestones:
+Identify **Minimum Useful Release** (core value demonstrable) and **First Full Feature Release** (all primary features functional). Name the phase and list capabilities at each.
 
-**Minimum Useful Release** — the first phase after which the product is usable enough to show to a real user. This is not "everything works" — it's "enough works that the core value proposition is demonstrable." Name the phase and list what the user can do at that point.
+### Cross-phase requirements
 
-**First Full Feature Release** — the first phase after which all primary features from the user requirements are functional (even if not polished). Name the phase and list the complete capability set.
+Extract from the PDR: data persistence, privacy rules, performance budgets. Only real constraints — don't invent generic ones.
 
-If the PDR or user requirements already identify these, use their definitions. If not, infer them from the requirements and phase structure.
+### PDR's Recommended Planning Phases
 
-### Cross-phase requirements are real constraints
-
-Extract concerns that span the entire plan from the PDR:
-- **Data persistence:** what must survive across the app lifecycle
-- **Privacy:** rules that every phase must respect (e.g., "rolling buffer never written to disk")
-- **Performance:** budgets that no phase should violate (e.g., "mic capture must not block during save")
-
-Do not invent generic constraints. If the PDR doesn't identify cross-cutting concerns, the section can be short or omitted.
-
-### Recommended Planning Phases from the PDR are a starting point, not a mandate
-
-If the PDR includes a Recommended Planning Phases section, use it as a starting point. You may:
-- Keep the same phases if they're well-ordered
-- Split phases that are too large
-- Merge phases that are too small
-- Reorder if the PDR's ordering violates dependencies
-- Add a feasibility phase if one isn't present but risks warrant it
-- Add a stabilization phase if one isn't present
-
-Flag any changes: "PDR recommended {N} phases. This plan uses {M} phases because {reason}."
+Use as starting point. May split, merge, reorder, or add feasibility/stabilization phases. Flag changes: "PDR recommended {N} phases. This plan uses {M} because {reason}."
 
 ## Concerns for Finalization
 
-The final section lists planning decisions and open questions that the finalization stage must account for when it adds task-level detail, test strategy, and traceability. Write 3–10 concerns. Each names a specific phase or cross-phase section and states what the finalizer needs to handle.
-
-Do not repeat gaps. Gaps are about what the source document didn't cover. Concerns are about what the plan DOES specify that creates finalization implications.
+Write 3–10 concerns. Each names a phase or cross-phase section and states what the finalizer must handle. Not gaps — things the plan specifies that create finalization implications.
 
 ## What NOT to Do
 
-- Do not decompose phases into implementation tasks. Required Work items are deliverables, not "create file X" or "write test for Y." Task breakdown is the finalizer's job.
-- Do not add technology stack decisions the PDR didn't make. If the PDR says "TBD," the plan says "TBD" — or assigns the decision to a feasibility phase.
-- Do not inflate phases for granularity. If the design decomposes naturally into 5 phases, write 5 phases. The finalizer can add scaffolding tasks within them.
-- Do not add time estimates or sprint mappings.
-- Do not contradict the PDR. If the PDR's component design doesn't support a clean phase split, flag it — do not silently redesign.
-- Do not drop the Concerns for Finalization section. Every plan has implications the finalizer needs to know about.
+- Do not decompose phases into tasks — that's the finalizer's job.
+- Do not add tech stack decisions the PDR didn't make.
+- Do not inflate phases — 5 natural phases > 8 padded ones.
+- Do not contradict the PDR ��� flag issues, don't silently redesign.
+
+## After Completion
+
+Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

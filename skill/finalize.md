@@ -1,6 +1,8 @@
 # Draft-to-Final SDLC Document Finalizer
 
-You are a senior software architect finalizing three SDLC documents from their drafts. You process them in a strict sequence where each final document feeds into the next. Your job is to fill gaps the draft author missed — not to rewrite their vision, but to make it buildable.
+Follow the universal rules and document standards defined in `sdlc/prompts/_standards.md`. Use its gap analysis framework, document structures, and phase table standard throughout all three steps.
+
+You are a senior software architect finalizing three SDLC documents from their drafts. Process in strict sequence (each feeds the next). Fill gaps the draft missed — don't rewrite their vision, make it buildable.
 
 ## Inputs
 
@@ -30,111 +32,9 @@ Each step depends on the previous. Do not parallelize.
 
 ## Step 1: draft.user.md → final.user.md
 
-### Process
+Follow the instructions in `sdlc/prompts/gen-user.md` completely. That prompt contains the full process, gap checklist, output format, and rules for producing `sdlc/docs/final.user.md` from `sdlc/docs/draft.user.md`.
 
-1. Read `draft.user.md` in full.
-2. Read the existing codebase to understand what's already built.
-3. Identify gaps using the checklist below.
-4. Write `final.user.md` — the draft's content plus everything it missed.
-
-### Gap Checklist: What Drafts Commonly Miss
-
-Apply your knowledge of software architecture and common SDLC patterns to surface requirements the draft didn't state explicitly. Check for each of the following and add what's missing:
-
-**Personas and actors**
-- [ ] Are all user roles identified? (end user, admin, system/cron, API consumer, reviewer)
-- [ ] Is there a "system" actor for automated processes (scheduled imports, background jobs, migrations)?
-- [ ] Are there external systems that act as users? (webhooks, CI/CD, monitoring)
-
-**Functional requirements the draft likely assumed but didn't write down**
-- [ ] Search and filtering — can users find things? By what dimensions?
-- [ ] Pagination — what happens when there are 10,000 results?
-- [ ] Bulk operations — can users act on multiple items at once?
-- [ ] Export/import — can data leave and re-enter the system?
-- [ ] Undo/rollback — can destructive actions be reversed?
-- [ ] Audit trail — who did what, when?
-
-**Non-functional requirements (almost always missing from drafts)**
-- [ ] Performance targets — response time, throughput, batch size limits
-- [ ] Data volume expectations — how many records in year 1? Year 3?
-- [ ] Availability — is downtime acceptable? For how long?
-- [ ] Data retention — how long is data kept? Is there a purge policy?
-- [ ] Backup and recovery — RPO/RTO targets
-- [ ] Security — authentication, authorization, input validation, secrets management
-- [ ] Observability — logging, metrics, health checks, error reporting
-- [ ] Accessibility — WCAG level, keyboard navigation, screen reader support
-
-**Edge cases and error states**
-- [ ] What happens when an external API is down?
-- [ ] What happens when the database is full or corrupt?
-- [ ] What happens when two users edit the same thing?
-- [ ] What happens on first run with no data?
-- [ ] What happens when credentials expire or are revoked?
-
-**Integration boundaries**
-- [ ] What systems does this talk to? What are their SLAs and rate limits?
-- [ ] What format does data arrive in? What format does it leave in?
-- [ ] Are there webhook/callback contracts?
-
-### final.user.md Format
-
-```markdown
----
-document: "User Requirements"
-version: "1.0"
-status: "final"
-source: "sdlc/docs/draft.user.md"
-finalized_date: "{YYYY-MM-DD}"
----
-
-# {Project Name} — User Requirements
-
-## 1. Overview
-{What this system does and why it exists. 2-3 paragraphs.}
-
-## 2. Personas
-
-### 2.1 {Persona Name}
-- **Role:** {description}
-- **Goals:** {what they want to accomplish}
-- **Technical level:** {novice / intermediate / expert}
-
-### 2.2 {Next Persona}
-...
-
-## 3. User Stories
-
-### 3.1 {Category}
-
-| ID | As a... | I want to... | So that... | Priority | Acceptance Criteria |
-|----|---------|-------------|-----------|----------|-------------------|
-| US-001 | {persona} | {action} | {value} | {must/should/could} | {testable criteria} |
-
-### 3.2 {Next Category}
-...
-
-## 4. Non-Functional Requirements
-
-| ID | Category | Requirement | Target | Priority |
-|----|----------|------------|--------|----------|
-| NFR-001 | Performance | {requirement} | {measurable target} | {must/should} |
-
-## 5. Constraints and Assumptions
-
-- {Each constraint or assumption as a bullet}
-
-## 6. Out of Scope
-
-- {Explicitly excluded items — prevents scope creep during implementation}
-```
-
-### Rules for Step 1
-
-- **Preserve the draft author's intent.** Do not remove or contradict requirements from the draft. Add to them.
-- **Every user story has acceptance criteria.** If the draft has stories without criteria, write criteria that are testable ("given X, when Y, then Z").
-- **Every non-functional requirement has a measurable target.** "Fast" is not a requirement. "P95 response time < 500ms for list endpoints" is.
-- **ID everything.** User stories get `US-NNN`, non-functional requirements get `NFR-NNN`. These IDs are referenced by the PDR and plan.
-- **Flag what you added.** At the bottom of each section you augmented, add a note: `<!-- Added during finalization: [brief reason] -->` so the author can review your additions.
+Read and execute `gen-user.md` as if its instructions were written inline here. Do not skip any of its rules or gap analysis steps. When it completes, `sdlc/docs/final.user.md` must exist before proceeding to Step 2.
 
 ---
 
@@ -279,13 +179,37 @@ project/
 | US-001 | 4.1 | SignalService | POST /api/signals |
 ```
 
-### Template Recommendation (Step 2 addendum)
+### Type-Aware Enrichment (Step 2)
 
-After writing all other PDR sections, check for template data that can inform a recommendation:
+If the draft PDR contains a "Detected project type" note (added by gen-pdr's type detection):
 
-1. Look for template manifests at `~/.sdlc/repo/examples/*/template.yaml`. If `~/.sdlc/repo` does not exist (no SDLC CLI cache), **skip this section entirely** — do not mention templates at all. The pipeline must work identically for users who haven't set up the CLI.
+1. **Locate the template root** using the same convention as gen-pdr:
+   - If current project root has `data/types/*.yaml` → template root is `.`
+   - Else if `$TEMPLATE_ROOT` is set → use that
+   - Else default: `C:\Projects\template`
+   
+   If the template root cannot be resolved or has no `examples/` directory, skip this enrichment.
 
-2. If template manifests are found, read each manifest's `type_id`, `name`, `description`, and `layers` fields. Compare the project's intent, architecture, and stack (from the user requirements and PDR content) against each template's `type_id` and characteristics.
+2. **Read TYPE_INFO.md** for the detected type from `{template_root}/examples/{type_id}/TYPE_INFO.md`
+
+3. **Cross-reference** the PDR's component designs against the example repo's structure:
+   - Where the PDR's components align with example patterns, add concrete implementation notes: directory paths matching the type's conventions, configuration patterns the type uses, testing patterns from the example
+   - Where the PDR intentionally diverges from the example, leave it alone — the PDR author's choices take precedence
+
+4. **Check anti-patterns.** Read the type definition's `anti_patterns` field and verify the PDR doesn't exhibit them. If it does, add a warning note.
+
+If no type was detected in the draft PDR, skip this enrichment entirely. No error.
+
+### Template Recommendation
+
+After writing all other PDR sections, check for template manifests:
+
+1. Look for `~/.sdlc/repo/examples/*/template.yaml` files. If `~/.sdlc/repo` does not exist
+   (no SDLC CLI cache), skip this section entirely — do not mention templates at all.
+
+2. If template manifests are found, read each manifest's `type_id`, `name`, `description`,
+   and `layers` fields. Compare the detected project type (from type enrichment above)
+   against each template's `type_id`.
 
 3. Write a `## Recommended Template` section at the end of `final.pdr.md`:
 
@@ -298,7 +222,8 @@ After writing all other PDR sections, check for template data that can inform a 
    **Confidence:** {High|Medium}
    **Layers:** {comma-separated layer list}
 
-   **Reasoning:** {1-2 sentences explaining why this template matches the project's intent, architecture, and stack.}
+   **Reasoning:** {1-2 sentences explaining why this template matches the project's
+   intent, architecture, and stack.}
 
    **To apply:**
    ```
@@ -317,9 +242,13 @@ After writing all other PDR sections, check for template data that can inform a 
    Browse available templates with `sdlc list`.
    ```
 
-4. **This section is informational only.** The finalize prompt does NOT execute `sdlc pull`. It recommends; the user decides and acts.
+4. **Critical:** This section is informational only. The finalize prompt does NOT execute
+   `sdlc pull`. It recommends; the user decides and acts.
 
-5. **Backward compatibility:** If `~/.sdlc/repo/` does not exist, omit the `## Recommended Template` section entirely. No error, no warning. The rest of `final.pdr.md` is unchanged.
+5. **Backward compatibility (NFR-008):** If no `~/.sdlc/repo` directory exists, omit the
+   `## Recommended Template` section entirely. Do not print an error or warning about
+   missing templates. The pipeline must work identically to before for users who haven't
+   set up the SDLC CLI.
 
 ### Rules for Step 2
 
@@ -378,6 +307,8 @@ After writing all other PDR sections, check for template data that can inform a 
 
 ### final.plan.md Format
 
+Use the Phase Table Standard from `_standards.md` for state transitions, columns, and commit protocol.
+
 ```markdown
 ---
 document: "Implementation Plan"
@@ -403,17 +334,7 @@ Open  ──>  Started  ──>  Completed
               │
               └──>  Blocked  ──>  Started  ──>  Completed
 
-- **Open**: Not yet begun.
-- **Started**: Actively in progress. Record the start datetime (PST).
-- **Completed**: Done and verified. Record the completion datetime (PST).
-- **Blocked**: Cannot proceed; note the blocker in the description.
-
-### Commit Protocol
-
-1. Work through all tasks in a phase.
-2. When every task reaches Completed, write the Phase Summary.
-3. Stage and commit all changes for the phase. Do not push.
-4. Proceed immediately to the next phase.
+(See _standards.md Phase Table Standard for state definitions and commit protocol.)
 
 ## Technology Stack
 
@@ -456,6 +377,16 @@ _Verify every PDR component appears in at least one phase task._
 | ... | ... | ... | ... |
 ```
 
+### Type-Aware Phase Guidance (Step 3)
+
+If a project type was detected (noted in the final PDR from Step 2):
+
+1. Read the example repo's directory structure to understand the typical build order for this type
+2. Verify the draft plan's phase ordering is compatible with the type's typical dependencies (e.g., a FastAPI service should set up routes before AI adapter integration)
+3. If the type's TYPE_INFO.md describes anti-patterns, verify the plan doesn't repeat them (e.g., if the type avoids "infrastructure overengineering", ensure early phases focus on core value not scaffolding)
+
+This is guidance, not override. The plan author's structure takes precedence. If no type was detected, skip entirely.
+
 ### Rules for Step 3
 
 - **Every PDR component gets at least one task.** The Coverage Checklist at the bottom must show complete coverage. If a PDR component has no task, add one to the appropriate phase.
@@ -469,18 +400,12 @@ _Verify every PDR component appears in at least one phase task._
 
 ## General Rules (All Steps)
 
-1. **Read before writing.** Read every input document in full before generating any output. Do not start writing `final.user.md` before finishing `draft.user.md`.
+The universal rules in `_standards.md` apply to all three steps. Additionally:
 
-2. **Preserve voice.** The draft author's phrasing, priorities, and architectural choices take precedence. You are filling gaps, not rewriting.
+- **Be concrete.** "Handle errors" → "Return HTTP 503 with `{error, retry_after}` when API returns 5xx."
+- **Cross-reference everything.** Unbroken traceability: user story IDs → PDR sections → plan tasks.
+- **Read the existing codebase.** Don't redesign working patterns.
 
-3. **Be concrete.** Every addition should be specific enough to implement. "Handle errors appropriately" is not a requirement. "Return HTTP 503 with `{"error": "upstream_unavailable", "retry_after": 30}` when the EDGAR API returns 5xx" is.
+## After Completion
 
-4. **Cross-reference everything.** User stories have IDs. PDR sections reference user story IDs. Plan tasks reference PDR sections. This traceability chain must be unbroken from user need to implementation task.
-
-5. **Flag additions visibly.** Use `<!-- Added during finalization: [reason] -->` HTML comments so the original author can quickly find and review everything you added. This is critical for trust — the author needs to distinguish their work from yours.
-
-6. **Do not invent scope.** Your gap-filling should serve requirements that are logically implied by the draft or are standard engineering practice (error handling, logging, testing). Do not add features the author didn't ask for. When in doubt, add it to the "Out of Scope" section with a note: "Consider for future iteration."
-
-7. **Read the existing codebase.** The project may already have patterns, conventions, and infrastructure. Final documents must be consistent with what exists. Do not propose replacing working code unless the draft explicitly calls for it.
-
-
+Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

@@ -2,9 +2,9 @@
 
 You are a senior software architect. Your job is to read a user requirements document and design the physical system that satisfies it. You produce a well-formed Product Design Review (PDR) as output.
 
-This prompt generates a draft PDR from prior-stage documents on disk. It makes design decisions — choosing components, defining data models, identifying risks, sketching state machines — based on what the requirements ask for and what good engineering practice demands. Alternative path: `skill/draft-pdr.md` formats a draft PDR from AI conversation content where design decisions have already been discussed.
+This prompt generates a draft PDR from prior-stage documents on disk. It makes design decisions — choosing components, defining data models, identifying risks, sketching state machines — based on what the requirements ask for and what good engineering practice demands. Alternative path: `sdlc/prompts/draft-pdr.md` formats a draft PDR from AI conversation content where design decisions have already been discussed.
 
-**Output:** `sdlc/docs/draft.pdr.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.pdr.md`.
+**Output:** `sdlc/docs/draft.pdr.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.pdr.md`.
 
 ## Input
 
@@ -47,55 +47,33 @@ A single markdown document written to `sdlc/docs/draft.pdr.md` with this structu
 
 Sections 6–8 vary by product. A mobile audio app needs trigger behavior and audio pipeline sections. A web dashboard needs API design and data source sections. Structure the middle of the document around what the requirements actually describe.
 
+## Standards
+
+Follow the universal rules and document standards defined in `sdlc/prompts/_standards.md`. Use its gap analysis framework and flag additions convention. This prompt's specific rules below.
+
 ## Rules
 
 ### Design for the requirements, not beyond them
 
-Every component, entity, state, and risk in the PDR must trace to a functional requirement, user flow, or acceptance criterion in the user requirements document. If a requirement says "save audio files," design a save pipeline and file storage component. If no requirement mentions search, do not design a search system.
-
-You may add components that are **structurally required** even if the user requirements don't name them explicitly — a repository layer to store entities, an adapter layer to isolate platform APIs, error handling for every flow. These are engineering necessities, not scope additions. Flag them:
-
-```markdown
-<!-- Structurally required: no explicit user requirement, but FR-4 (save trigger)
-     requires file I/O, which requires a storage adapter to keep domain logic
-     platform-agnostic. -->
-```
+Every component, entity, state, and risk must trace to a requirement. Add only structurally required infrastructure (repositories, adapters, error handling). Flag structural additions with `<!-- Structurally required: ... -->`.
 
 ### Assess the source document
 
-Before designing, evaluate the user requirements document for completeness. Check:
+Evaluate using the gap framework from `_standards.md`. Prompt-specific checklist:
 
-**Critical — the PDR will be structurally weak if these are missing from the user doc:**
+**Critical:**
 - [ ] At least one end-to-end user flow
 - [ ] Clear functional requirements (not just vague goals)
 - [ ] Product boundaries / non-goals
 - [ ] Primary interaction model (how the user talks to the system)
 
-**Notable — the PDR will have to make assumptions if these are missing:**
+**Notable:**
 - [ ] Error cases or unhappy paths
 - [ ] Data lifecycle (what's created, what's deleted, what persists)
 - [ ] Privacy or security expectations
 - [ ] Configurability (what's fixed vs. user-adjustable)
 
-For every unchecked item, add a warning to a **Gaps in Source Document** section at the top of the PDR. Be blunt about what was missing and what you assumed:
-
-```markdown
-## Gaps in Source Document
-
-### Critical
-
-- **No error cases described.** The user requirements cover the happy path only.
-  The error handling section below (Section 14) is entirely this PDR's inference.
-  Review it — the original author may have different expectations for failure behavior.
-
-### Notable
-
-- **Data lifecycle is implicit.** The requirements say "save audio files" but never
-  say when or whether files can be deleted. This PDR adds a delete flow and soft-delete
-  schema. Confirm this matches intent.
-```
-
-If the source document has a **Concerns for Physical Design** section (produced by the user requirements prompt or finalizer), address every concern. If a concern cannot be resolved from the requirements alone, carry it into the Gaps section with your best-effort design and a note that it needs review.
+Write gaps to a **Gaps in Source Document** section. If the source has a **Concerns for Physical Design** section, address every concern.
 
 ### Data model is structured, not prose
 
@@ -154,20 +132,17 @@ Each risk must include:
 
 The last substantive section is a high-level phase sketch — enough to show the risk-first ordering and major milestones. 5–10 phases, each with a one-line purpose. No task tables, no detailed scope, no acceptance criteria. The plan prompt handles that.
 
-### Voice and tone
-
-Match the terminology from the user requirements. If they said "rolling buffer," use "rolling buffer." Technical precision is good; renaming the user's concepts is not.
-
 ## Concerns for Release Planning
 
-The final section lists design decisions and risks that the release plan must account for. Write 3–10 concerns. Each names a specific PDR section and states what the plan needs to decide or sequence.
-
-Do not repeat gaps. Gaps are about what the source document didn't cover. Concerns are about what the PDR DOES specify that creates planning implications.
+Write 3–10 concerns. Each names a specific PDR section and states what the plan must decide. Not gaps (what's missing) — concerns (what's designed that creates planning implications).
 
 ## What NOT to Do
 
-- Do not write executable SQL, API route definitions, or implementation code. The PDR defines logical models and component responsibilities. The finalizer adds executable detail.
-- Do not plan phases with task-level detail. The Recommended Planning Phases section is a sketch.
-- Do not add features the requirements didn't ask for. Engineering infrastructure (repositories, adapters, error handling) is fine. New user-facing features are not.
-- Do not fill gaps with generic architecture boilerplate. If you don't have enough information to design a component well, design what you can and flag the rest explicitly.
-- Do not contradict the user requirements. If a requirement seems wrong or incomplete, flag it in the Gaps section — do not silently override it.
+- Do not write executable SQL or implementation code — the finalizer adds that.
+- Do not plan phases with task-level detail — that's the plan prompt's job.
+- Do not add features the requirements didn't ask for (engineering infra is fine).
+- Do not fill gaps with generic boilerplate — flag explicitly instead.
+
+## After Completion
+
+Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

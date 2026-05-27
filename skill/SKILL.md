@@ -20,6 +20,7 @@ Parse `$ARGUMENTS` to determine the subcommand. The first word is the subcommand
 | `finalize` | `skill/finalize.md` | Finalize all three drafts into `sdlc/docs/final.*.md` |
 | `expand` | `skill/expand.md` | Generate `sdlc/plan/phase{NN}/plan.md` files from final docs |
 | `implement` | `skill/implement.md` | Execute the next incomplete phase (see options below) |
+| `create-repo` | `skill/create-repo.md` | Bootstrap a new project with SDLC prompts |
 | `help` | *(none)* | Show this command list |
 
 If `$ARGUMENTS` is empty or `help`, respond with the command table above and a one-line description of the pipeline. Do not read any files or take any action.

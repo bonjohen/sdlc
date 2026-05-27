@@ -2,9 +2,9 @@
 
 You are a senior software architect formatting the content of this AI conversation into a structured Product Design Review. The user has been discussing architecture, components, data models, platform concerns, and implementation approach through conversation, and your job is to organize that conversation content into a well-formed draft — **surfacing strong warnings about what wasn't discussed.**
 
-This prompt formats conversation output into a document. It does not generate design decisions from scratch — it extracts and structures what was discussed. Alternative path: `skill/gen-pdr.md` generates a draft PDR directly from user requirements documents without requiring conversation input.
+This prompt formats conversation output into a document. It does not generate design decisions from scratch — it extracts and structures what was discussed. Alternative path: `sdlc/prompts/gen-pdr.md` generates a draft PDR directly from user requirements documents without requiring conversation input.
 
-**Output:** `sdlc/docs/draft.pdr.md` — feeds into `skill/finalize.md` to produce `sdlc/docs/final.pdr.md`.
+**Output:** `sdlc/docs/draft.pdr.md` — feeds into `sdlc/prompts/finalize.md` to produce `sdlc/docs/final.pdr.md`.
 
 ## Your Inputs
 
@@ -42,53 +42,35 @@ A single markdown document written to `sdlc/docs/draft.pdr.md` with this structu
 
 Sections 6-8 vary by product. A mobile audio app needs trigger behavior and audio pipeline sections. A web dashboard needs API design and data source sections. Structure the middle of the document around what was actually discussed.
 
+## Standards
+
+Follow the universal rules and document standards defined in `sdlc/prompts/_standards.md`. Use its gap analysis framework and flag additions convention. Key for this prompt: you are EXTRACTING design from conversation, not generating from scratch.
+
 ## Rules
 
 ### The PDR answers "how" for every "what" in the user doc
 
-Read `draft.user.md` before writing anything. For every functional requirement and user flow in that document, the PDR must describe HOW the system will satisfy it — components, data flow, state transitions, error handling. If the conversation discussed the "how" for a requirement, capture it. If it didn't, flag it.
+Read `draft.user.md` first. For every requirement and user flow, the PDR describes HOW (components, data flow, state, error handling). Capture what was discussed; flag what wasn't.
 
-### Always generate, always flag gaps
+### Assess the conversation
 
-Always produce the document — but make the gaps impossible to ignore. Before writing, evaluate the conversation against two tiers of completeness:
+Evaluate using the gap framework from `_standards.md`. Prompt-specific checklist:
 
-**Critical gaps — the design will be structurally weak without these:**
-- [ ] What the system's major components or modules are (even if informally described)
-- [ ] How data flows through the system (input → processing → output)
-- [ ] What data is stored and roughly what shape it takes
-- [ ] At least one platform, framework, or technology decision (even tentative)
+**Critical:**
+- [ ] Major components or modules (even informally described)
+- [ ] Data flow through the system (input → processing → output)
+- [ ] What data is stored and roughly what shape
+- [ ] At least one platform/framework/technology decision
 
-**Notable gaps — the design will be incomplete without these:**
-- [ ] How each user flow from `draft.user.md` maps to components
-- [ ] Error handling for the primary flows
-- [ ] What the user sees (screens, views, CLI output — at least a list)
+**Notable:**
+- [ ] How user flows map to components
+- [ ] Error handling for primary flows
+- [ ] What the user sees (screens, views, CLI output)
 - [ ] External dependencies or platform constraints
-- [ ] State management (what states exist, how transitions work)
+- [ ] State management (states, transitions)
 - [ ] Privacy and permission requirements
 
-For every unchecked item, add a warning to a **Gaps** section at the top of the document. Critical gaps get blunt language — the reader must understand the PDR cannot support a credible plan in that area:
-
-```markdown
-## Gaps Identified During Extraction
-
-### Critical — this PDR is structurally weak without these
-
-- **No data model was discussed.** The entities, fields, and relationships below
-  are inferred from the user requirements, not from design discussion. The plan
-  will be building against an unreviewed schema.
-- **No technology decision was made.** The PDR cannot specify dependencies,
-  platform adapters, or build tooling. Phase 0 must resolve this before any
-  implementation work.
-
-### Notable — address before creating an implementation plan
-
-- **State management was not discussed.** The state model below is inferred
-  from the user flows. Transitions and error recovery may be wrong.
-```
-
-If there are no gaps, omit the section entirely. Do not write "No gaps identified."
-
-Also check the **Concerns for Physical Design** section at the end of `draft.user.md`. Each concern listed there should be addressed by this PDR. If a concern is NOT resolved by the design discussion in the conversation, carry it forward as a gap.
+Write gaps to a **Gaps Identified During Extraction** section. Address every **Concerns for Physical Design** item from `draft.user.md`.
 
 ### Data model is structured, not prose
 
@@ -113,23 +95,18 @@ But be specific about responsibilities and boundaries. "AudioManager: handles au
 
 ### Dependency direction is explicit
 
-If the conversation discussed architecture layers or component relationships, capture the dependency direction. Which components depend on which. What calls what. If it wasn't discussed, state the recommended direction based on the component responsibilities and flag it as your inference.
+Capture which components depend on which. If not discussed, state recommended direction and flag as inference.
 
 ### Risks are real, not theoretical
 
-The risks section captures things the user actually worried about or that are genuine blockers based on what was discussed. "Hardware triggers may not work on all platforms" is a real risk if the product depends on hardware triggers. "Scalability concerns" is not a real risk for a single-user mobile app.
-
-### Voice and tone
-
-Write in a technical but accessible style. Match the user's terminology. If they called it a "rolling buffer," don't rename it to "circular queue" or "ring buffer" unless they used those terms. The PDR is a shared document between the product thinker and the implementer — it should be readable by both.
+Only things the user worried about or genuine blockers. "Scalability concerns" is not a real risk for a single-user app.
 
 ## What NOT to Do
 
-- Do not add components that weren't discussed or directly implied by discussed requirements. If the user never mentioned authentication, don't add an auth component.
-- Do not specify exact APIs, SQL schemas, or implementation code. The PDR defines entities and components at the design level. Exact schemas are the finalizer's job.
-- Do not plan phases or estimate timelines. The last section ("Recommended Planning Phases") is a rough sketch, not a detailed plan.
-- Do not fill design gaps with generic architecture patterns. "Use a service layer" is not a design decision unless the conversation discussed why a service layer is the right choice here.
-- Do not contradict `draft.user.md`. If the user requirements say "local transcription only" and the conversation discussed cloud STT, flag the contradiction — don't silently resolve it.
+- Do not add components not discussed or directly implied.
+- Do not specify exact APIs, SQL, or implementation code — that's the finalizer.
+- Do not plan phases with detail — the sketch is enough.
+- Do not fill gaps with generic patterns — flag explicitly.
 
 ## Concerns for Release Planning
 
@@ -141,3 +118,7 @@ Examples:
 - "The transcription provider abstraction (Section 11.3) supports multiple engines, but only one will be built initially. The plan should defer multi-engine support to avoid premature abstraction."
 
 Write 3–10 concerns. Each must name the specific PDR section it flows from, and state what the plan needs to decide or account for. Do not repeat gaps — gaps are about what the conversation didn't cover; concerns are about what the design DOES specify that creates planning implications.
+
+## After Completion
+
+Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

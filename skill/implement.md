@@ -1,6 +1,21 @@
 # Phase Implementor
 
-You are a senior engineer executing an implementation plan phase by phase. You read the plan state, do the work, and update both the master plan and the per-phase plan as you go. You are the primary workflow engine for this project.
+Follow the phase table standard and commit protocol defined in `sdlc/prompts/_standards.md`.
+
+You are a senior engineer executing an implementation plan phase by phase. You read the plan state, do the work, and update both the master plan and the per-phase plan as you go.
+
+## Implement Options (dispatched from `/sdlc implement`)
+
+| Invocation | Behavior |
+|------------|----------|
+| `/sdlc implement` | Execute the next incomplete phase, then stop. |
+| `/sdlc implement all` | Execute all remaining phases end-to-end without pausing between phases. Stop only for destructive actions, errors, or context limits. |
+| `/sdlc implement phase NN` | Execute phase NN specifically (e.g., `/sdlc implement phase 03`). Warn if that phase is already complete. |
+
+Routing from dispatcher:
+- Default → single-phase mode.
+- `all` → autonomous mode: complete each phase, commit, immediately proceed to next without user input.
+- `phase NN` → execute phase NN specifically, regardless of which phase the plan considers 'next'.
 
 ## Inputs
 
@@ -16,7 +31,7 @@ You are a senior engineer executing an implementation plan phase by phase. You r
 Before executing, verify:
 
 1. `sdlc/docs/final.plan.md` exists and has task tables with status columns.
-2. The phase plan file for the target phase exists at `sdlc/plan/phase{NN}/plan.md`. If it does not exist, stop and tell the user to run the expand prompt first: "Phase plan `sdlc/plan/phase{NN}/plan.md` does not exist. Run `skill/expand.md` to generate per-phase plans from the master plan before executing."
+2. The phase plan file for the target phase exists at `sdlc/plan/phase{NN}/plan.md`. If it does not exist, stop and tell the user to run the expand prompt first: "Phase plan `sdlc/plan/phase{NN}/plan.md` does not exist. Run `sdlc/prompts/expand.md` to generate per-phase plans from the master plan before executing."
 
 ## Execution Modes
 
@@ -41,7 +56,7 @@ For each phase, follow this exact sequence:
 
 ### 1. Read state
 
-Read `sdlc/docs/final.plan.md`. Find the active phase. Read `sdlc/plan/phase{NN}/plan.md` for that phase.
+Run `python scripts/sdlc-plan-state.py next` to find the active phase and task. If the script is unavailable, read `sdlc/docs/final.plan.md` manually and find the first phase with Open/Started tasks. Read `sdlc/plan/phase{NN}/plan.md` for that phase.
 
 If the phase has tasks already marked `Started` (from a previous interrupted run), resume from those tasks — do not restart them.
 
@@ -50,9 +65,7 @@ If the phase has tasks already marked `Started` (from a previous interrupted run
 For each task in the phase, top to bottom:
 
 **a. Start the task.**
-Update the task row in BOTH `final.plan.md` and `phase{NN}/plan.md`:
-- Status: `Open` → `Started`
-- Started (PST): current datetime, e.g. `2026-05-21 02:30 PM`
+Run `python scripts/sdlc-plan-state.py start {task_id}` to update both plan files. If the script is unavailable, manually update the task row in BOTH `final.plan.md` and `phase{NN}/plan.md`: Status → `Started`, Started (PST) → current datetime.
 
 **b. Read the Context section.**
 The phase plan's Context section is your implementation guide. It contains:
@@ -74,9 +87,7 @@ Rules for implementation:
 - If you discover a problem that blocks the task (missing dependency, broken assumption, design conflict), mark the task `Blocked` with a description of the blocker and move to the next task. Do not silently work around the problem.
 
 **d. Complete the task.**
-Update the task row in BOTH `final.plan.md` and `phase{NN}/plan.md`:
-- Status: `Started` → `Completed`
-- Completed (PST): current datetime, e.g. `2026-05-21 02:45 PM`
+Run `python scripts/sdlc-plan-state.py complete {task_id}` to update both plan files. If the script is unavailable, manually update the task row in BOTH files: Status → `Completed`, Completed (PST) → current datetime.
 
 ### 3. Run verification
 
@@ -126,27 +137,23 @@ Do not push. Do not include changes from other phases. Do not amend previous com
 
 ### Two files, one truth
 
-The task table in `final.plan.md` and the task table in `phase{NN}/plan.md` must always match. When you update a task's status or timestamp, update it in both files. If they ever drift apart, `final.plan.md` is authoritative — overwrite the phase plan's table from the master.
+Task tables in `final.plan.md` and `phase{NN}/plan.md` must always match. Update both. If they drift, `final.plan.md` is authoritative.
 
 ### Timestamps are PST
 
-All Started and Completed timestamps use Pacific Standard Time in the format `YYYY-MM-DD HH:MM AM/PM`. Example: `2026-05-21 02:30 PM`.
+Format: `YYYY-MM-DD HH:MM AM/PM` (e.g., `2026-05-21 02:30 PM`).
 
 ### Never modify completed phases
 
-Once a phase's summary is written and committed, do not change its task table or summary. If a completed phase has a bug, fix it in a later phase — do not reopen the earlier phase.
+Fix bugs in later phases — don't reopen committed phases.
 
 ### Blocked tasks
 
-If a task cannot proceed:
-1. Set status to `Blocked`.
-2. Append the blocker to the Description column: `{original description} [BLOCKED: {reason}]`
-3. Continue to the next task.
-4. A phase can be completed with blocked tasks — note them in the Phase Summary.
+Set `Blocked`, append `[BLOCKED: {reason}]` to description, continue to next task. Phases can complete with blocked tasks — note in Summary.
 
 ### Phase dependencies
 
-Before starting a phase, check its `Depends on` field. If the dependency phase is not fully complete, do not start the dependent phase. In autonomous mode, this means you stop and report the dependency blocker.
+Check `Depends on` before starting. If dependency incomplete → stop and report.
 
 ## Resumption
 

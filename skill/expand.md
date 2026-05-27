@@ -1,8 +1,8 @@
 # Phase Plan Expander
 
-You are a senior software architect generating standalone phase execution plans from finalized SDLC documents. You read the final plan, PDR, and user requirements, then produce one self-contained plan file per phase. Each phase plan must contain everything an implementer needs to execute that phase without re-reading the full PDR or user requirements.
+Follow the phase table standard and document structures defined in `sdlc/prompts/_standards.md`.
 
-This prompt is the bridge between finalized documentation and implementation. It runs once after `finalize.md` has produced the final documents, and before `implement.md` begins executing phases.
+You are generating standalone phase execution plans from finalized SDLC documents. Each phase plan must contain everything an implementer needs to execute that phase without re-reading the full PDR or user requirements.
 
 **Output:** One file per phase at `sdlc/plan/phase{NN}/plan.md`
 
@@ -16,9 +16,15 @@ Read all three finalized documents in full before generating any output:
 | Final PDR | `sdlc/docs/final.pdr.md` | Component interfaces, data model (schema), package layout, platform adapters, configuration, test strategy |
 | Final User Requirements | `sdlc/docs/final.user.md` | User stories referenced by each phase, acceptance criteria, NFRs |
 
-If any of these files do not exist, stop: "Cannot expand phases. Missing: `{file}`. Run `skill/finalize.md` first."
+If any of these files do not exist, stop: "Cannot expand phases. Missing: `{file}`. Run `sdlc/prompts/finalize.md` first."
 
 Also read the existing codebase to understand what already exists. If prior phases have already been implemented, the context sections for later phases should reference the actual code, not just the PDR's design.
+
+## Scaffold Generation
+
+Run `python scripts/phase-template.py` to generate skeleton files for all phases. This creates the frontmatter, task tables, and section headings automatically. Then fill in the **Context** section for each phase — that is where the AI value-add is.
+
+If the script is unavailable, generate files manually using the format below.
 
 ## Output Format
 
@@ -118,53 +124,42 @@ This means the Context section will often be the longest part of the file. A 200
 
 ### 2. Task tables match the master plan
 
-The task table in each phase plan must exactly match the corresponding phase's task table in `final.plan.md` — same task numbers, same descriptions, same columns. The phase plans add context around the tasks; they do not change the tasks themselves.
-
-If the master plan has tasks that seem too coarse or too fine, do not adjust them here. The master plan is authoritative for task definitions. The Context section compensates by providing the detail the implementer needs.
+Copy task tables exactly from `final.plan.md`. Do not adjust tasks. Context section provides detail.
 
 ### 3. Concrete, not abstract
 
-Write file paths, not "the relevant module." Write actual SQL from the PDR, not "create a table for X." Write actual interface signatures, not "import the base class." Show data shapes, not "a JSON object with the relevant fields."
+File paths, actual SQL, interface signatures, data shapes. If a task says "Implement X," the Context shows the exact interface, location, and configuration from the PDR.
 
-If a task says "Implement RollingBufferManager," the Context section should show the exact interface from PDR Section 4.2, the package location from PDR Section 3, and the configuration values from PDR Section 1.3 that affect buffer size.
+### 4. One task per line, one file per phase
 
-### 4. One task per line
+Do not merge or split tasks or phases from the master plan.
 
-Each task row in the master plan describes one atomic unit of work. Do not merge or split tasks from the master plan. The task table is copied as-is.
+### 5. Frontmatter traces lineage
 
-### 5. Preserve phase boundaries
+Use exact section numbers and story IDs from `final.plan.md` phase headers.
 
-Each phase in `final.plan.md` gets exactly one phase plan file. Do not merge or split phases. The number of output files equals the number of phases in the master plan.
+### 6. Verification is testable
 
-### 6. Frontmatter traces lineage
+Commands to run or conditions to check. Not "code is clean" — "`ruff check app/` exits 0". For research phases: deliverable existence checks.
 
-`source_pdr_sections` and `source_user_stories` link back to the source documents. Use the exact section numbers and story IDs from the **PDR sections** and **User stories** lines in each phase's header in `final.plan.md`.
+### 7. Context references existing code for later phases
 
-### 7. Verification is testable
+Reference actual files, patterns, imports from earlier implemented phases — not just PDR abstractions.
 
-Every verification item must be a command to run or a condition to physically check. "Code is clean" is not testable. "`ruff check app/new_module.py` exits 0" is testable. "App launches and displays the main screen" is testable on a device.
+### 8. No implementation
 
-For phases that are primarily validation/research (like Phase 0 feasibility), verification items are deliverable checks: "Feasibility report exists at `sdlc/docs/phase00_feasibility.md`" or "Trigger reliability matrix is documented with pass/fail per device state."
-
-### 8. Context references existing code for later phases
-
-If the project already has code from earlier phases, the Context section for later phases should reference the actual files and patterns that exist, not just the PDR's abstract design. Read the codebase to find:
-- Where earlier components were actually placed (may differ from PDR's suggested layout)
-- What patterns were established (naming conventions, error handling style, test structure)
-- What imports and base classes are available
-
-### 9. No implementation
-
-Phase plans are plans, not code. Do not write the actual implementation — write what needs to be implemented, where, following what patterns, and how to verify it.
+Write what to implement, where, and how to verify — not the actual code.
 
 ## Processing Order
 
-Generate phase plans sequentially, starting from Phase 00. This matters because later phases may reference patterns established in earlier phase plans. However, do not assume earlier phases are *implemented* — only that their plans exist.
+Generate sequentially from Phase 00. Later phases may reference earlier plans but don't assume earlier phases are implemented.
 
 ## What NOT to Do
 
-- Do not modify `final.plan.md`, `final.pdr.md`, or `final.user.md`. These are read-only inputs.
-- Do not change task descriptions, numbers, or ordering from the master plan.
-- Do not add tasks that aren't in the master plan. If you notice a gap, note it in the Design Notes section of the affected phase, not as a new task row.
-- Do not write implementation code in the phase plans.
-- Do not generate phase plans for phases that aren't in the master plan.
+- Do not modify final docs (read-only inputs).
+- Do not change tasks from master plan — note gaps in Design Notes instead.
+- Do not write implementation code.
+
+## After Completion
+
+Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

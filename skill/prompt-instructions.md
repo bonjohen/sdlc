@@ -7,6 +7,7 @@
 | `draft-user.md` | Format an AI conversation about a product idea into a structured user requirements document | Conversation history | `sdlc/docs/draft.user.md` |
 | `draft-pdr.md` | Format an AI conversation about system design into a structured Product Design Review | Conversation history + user requirements doc | `sdlc/docs/draft.pdr.md` |
 | `draft-plan.md` | Format an AI conversation about phasing and priorities into a structured release plan | Conversation history + user requirements doc + PDR | `sdlc/docs/draft.plan.md` |
+| `gen-user.md` | Finalize a draft user requirements document — fill gaps, add IDs, add NFRs, make testable | `draft.user.md` | `sdlc/docs/final.user.md` |
 | `gen-pdr.md` | Generate a PDR directly from a user requirements document (no conversation needed) | `draft.user.md` or `final.user.md` | `sdlc/docs/draft.pdr.md` |
 | `gen-plan.md` | Generate a release plan directly from a PDR (no conversation needed) | `draft.pdr.md` or `final.pdr.md` | `sdlc/docs/draft.plan.md` |
 | `finalize.md` | Finalize all three draft documents — fill gaps, add traceability, produce executable schema | `draft.user.md` + `draft.pdr.md` + `draft.plan.md` | `final.user.md` + `final.pdr.md` + `final.plan.md` |
@@ -55,11 +56,11 @@ Copy or symlink `SKILL.md` into your Claude Code skills directory:
 ```bash
 # Symlink (stays in sync with the repo)
 mkdir -p ~/.claude/skills/sdlc
-ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
+ln -s "$(pwd)/sdlc/prompts/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 
 # Or copy
 mkdir -p ~/.claude/skills/sdlc
-cp skill/SKILL.md ~/.claude/skills/sdlc/SKILL.md
+cp sdlc/prompts/SKILL.md ~/.claude/skills/sdlc/SKILL.md
 ```
 
 ## When to Use Each Prompt
@@ -68,7 +69,13 @@ cp skill/SKILL.md ~/.claude/skills/sdlc/SKILL.md
 
 Use after you've had a conversation with an AI about what your product should do. The conversation should cover what the product is, who uses it, how it works, and what it doesn't do. This prompt reads the conversation and formats it into a `draft.user.md`.
 
-There is no `gen-user.md` equivalent. User requirements always come from conversation — they are the starting point of the pipeline.
+To finalize a draft into `final.user.md`, use `gen-user.md`.
+
+### `gen-user.md` — "I have a draft, finalize the user requirements"
+
+Use when `draft.user.md` exists and you want to produce a finalized `final.user.md` — with gap analysis, persona identification, user story IDs, non-functional requirements, and acceptance criteria. This is also the step that `finalize.md` delegates to internally for its Step 1.
+
+You can run `gen-user.md` standalone when you only need to finalize user requirements without processing the PDR and plan. Or let `finalize.md` invoke it as part of the full three-document finalization pass.
 
 ### `draft-pdr.md` — "I just finished discussing the system design"
 
@@ -201,14 +208,15 @@ If you don't want three separate conversations, use the generators to skip the c
 
 ```
 Step 1: Conversation → draft-user.md → draft.user.md
-Step 2: gen-pdr.md                   → draft.pdr.md    (no conversation needed)
-Step 3: gen-plan.md                  → draft.plan.md   (no conversation needed)
-Step 4: finalize.md                  → final.*.md
-Step 5: expand.md                    → phase plans
-Step 6: implement.md                 → code
+Step 2: gen-user.md                  → final.user.md   (no conversation needed)
+Step 3: gen-pdr.md                   → draft.pdr.md    (no conversation needed)
+Step 4: gen-plan.md                  → draft.plan.md   (no conversation needed)
+Step 5: finalize.md                  → final.*.md      (Step 1 delegates to gen-user.md)
+Step 6: expand.md                    → phase plans
+Step 7: implement.md                 → code
 ```
 
-The fast path always starts with a conversation (Step 1) — user requirements must come from a human describing what they want. But the PDR and plan can be generated directly from the requirements without additional conversation.
+The fast path always starts with a conversation (Step 1) — user requirements must come from a human describing what they want. The remaining stages can be generated directly from prior-stage documents without additional conversation. You can also run `gen-user.md` standalone (Step 2) to finalize user requirements before generating the PDR.
 
 ## The Mixed Path
 
@@ -224,18 +232,20 @@ Any combination works as long as the inputs exist when you run each prompt.
 ## File Layout
 
 ```
-skill/
-  prompt-instructions.md      ← this file
-  SKILL.md                    ← /sdlc skill dispatcher (install to ~/.claude/skills/sdlc/)
-  draft-user.md               ← conversation → draft user requirements
-  draft-pdr.md                ← conversation → draft PDR
-  draft-plan.md               ← conversation → draft release plan
-  gen-pdr.md                  ← user requirements → draft PDR
-  gen-plan.md                 ← PDR → draft release plan
-  finalize.md                 ← drafts → finals (gap analysis, traceability)
-  expand.md                   ← final plan → per-phase execution plans
-  implement.md                ← execute phases, update state, write code
 sdlc/
+  prompts/
+    prompt-instructions.md    ← this file
+    SKILL.md                  ← /sdlc skill dispatcher (install to ~/.claude/skills/sdlc/)
+    draft-user.md             ← conversation → draft user requirements
+    draft-pdr.md              ← conversation → draft PDR
+    draft-plan.md             ← conversation → draft release plan
+    gen-user.md               ← draft user requirements → final user requirements
+    gen-pdr.md                ← user requirements → draft PDR
+    gen-plan.md               ← PDR → draft release plan
+    finalize.md               ← drafts → finals (delegates Step 1 to gen-user.md)
+    expand.md                 ← final plan → per-phase execution plans
+    implement.md              ← execute phases, update state, write code
+    create-repo.md            ← bootstrap a new project with SDLC prompts
   docs/
     draft.user.md             ← draft user requirements
     draft.pdr.md              ← draft Product Design Review
