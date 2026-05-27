@@ -105,7 +105,7 @@ If using `scripts/sdlc-plan-state.py` (optional): `python scripts/sdlc-plan-stat
 
 Read `sdlc/plan/phase{NN}/plan.md` for the active phase.
 
-If the phase has tasks already marked `Started` (from a previous interrupted run), follow the Crash Recovery Protocol (Section 5) before proceeding.
+If the phase has tasks already marked `Started` (from a previous interrupted run), follow the Rewind Protocol (Section 5) before proceeding.
 
 ### 3.2 Execute Tasks
 
@@ -209,18 +209,18 @@ Do not push. Do not include changes from other phases. Do not amend previous com
 
 After committing, update the Commit column in the master plan's Phase Status table (new format) with the short hash.
 
-### 3.6 Context Lifecycle (multi-phase modes only)
+### 3.6 Branch (multi-phase modes only)
 
-See Section 7 for the full context lifecycle protocol. In summary:
+After each phase commit, fork the conversation to start the next phase with a clean context. See Section 7 for the full protocol. In summary:
 
-- Run `/compact` with focus phrase: `"Phase {NN} complete, starting Phase {NN+1}, plan at sdlc/docs/final.plan.md"`
-- After compaction: re-read `final.plan.md` to confirm phase completion is recorded
-- If context > 50% after compaction: clean stop (see Section 7)
+- Run `/branch` to snapshot the current session and fork into a new one
+- The new session starts clean — re-read `final.plan.md` to pick up the next phase
+- The original session is preserved intact as a restore point
 
 ### 3.7 Continue or Stop
 
-- **More phases + multi-phase mode:** Update sentinel `phase_plan` field, proceed to step 3.1 for the next phase.
-- **More phases + single-phase mode:** Delete sentinel, stop. Tell the user the phase is complete and what the next phase is.
+- **More phases + multi-phase mode:** Branch (Section 3.6). The new session resumes from the next phase — update sentinel `phase_plan` field and proceed to step 3.1.
+- **More phases + single-phase mode:** Delete sentinel, stop. Tell the user the phase is complete and what the next phase is. The user resumes later with `/sdlc implement`.
 - **No more phases:** Delete sentinel, report: "All phases complete. Plan fully implemented."
 
 ---
@@ -238,13 +238,13 @@ The `pre-implement-status-guard.py` hook enforces the Started rule at runtime. T
 
 ---
 
-## 5. Crash Recovery Protocol
+## 5. Rewind Protocol
 
-When resuming execution and finding tasks already marked `Started` (from a previous interrupted session):
+When resuming execution and finding tasks already marked `Started` (from a previous interrupted session), rewind to the last known-good state and replay forward:
 
 1. **For each `Started` task:** Check if the described work exists on disk — files created, functions implemented, tests written.
-2. **If work exists:** Mark the task `Completed` with the current PST timestamp. Append `[recovered from interrupted session]` to the task description.
-3. **If work does NOT exist:** Leave the task as `Started` and re-implement it from scratch.
+2. **If work exists:** The work survived the crash — mark the task `Completed` with the current PST timestamp. Append `[recovered from interrupted session]` to the task description.
+3. **If work does NOT exist:** Rewind — treat the task as if it was never started. Leave it as `Started` and re-implement from scratch.
 4. **For `Open` tasks after a `Started`/`Completed` sequence:** Check for partial work on disk. If found, mark `Started` then `Completed` with recovery annotation.
 
 **Never mark a task `Completed` without verifying the described work actually exists on disk.** (US-017)
@@ -264,41 +264,33 @@ These rules prevent context window pollution and keep the agent focused on the c
 
 ---
 
-## 7. Context Lifecycle (multi-phase modes only)
+## 7. Branch Protocol (multi-phase modes only)
 
-Multi-phase execution (`all`, `phase NN all`) accumulates context rapidly. This section defines when and how to compact.
+Multi-phase execution (`all`, `phase NN all`) accumulates context rapidly. Instead of compacting within the same session, **branch** into a new session after each phase. This gives each phase a clean context window while preserving the completed session as a restore point.
 
 ### After each phase commit
 
-Run `/compact` with an aggressive focus phrase:
+1. Update the master plan (phase status, commit hash, phase summary) — this is the durable state that the new session will read.
+2. Run `/branch` to fork the conversation. The current session is preserved intact; a new session starts with full context window available.
+3. In the new session, the `/sdlc implement all` command resumes automatically — it reads the plan, finds the next incomplete phase, and continues.
 
-```
-"Phase {NN} complete, starting Phase {NN+1}. Active plan: sdlc/docs/final.plan.md. Current branch: {branch}. Sentinel at ~/.claude/state/sdlc-implement.json."
-```
+### Why branch instead of compact
 
-### After compaction
+Compaction loses detail. Each phase generates tool calls, file reads, edits, and verification output that consume context. Compacting tries to preserve the important parts, but the summarization is lossy — and the risk of lost context causing incorrect behavior in later phases is high. Branching sidesteps this entirely: each phase gets a full context window, and the plan files on disk are the continuity mechanism, not conversation history.
 
-Re-read `sdlc/docs/final.plan.md` to confirm:
-- The just-completed phase shows as `complete` (new format) or has all tasks `Completed` (old format)
-- The next phase exists and has `Open` tasks
+### Resume after branch
 
-### Self-compaction threshold
+The new session has no memory of the previous session's conversation. It resumes by reading state from disk:
 
-If context usage exceeds 50% (estimated from conversation length and tool call count), compact before continuing to the next phase. This is lower than the global 65% rule because multi-phase runs accumulate context faster.
+- `sdlc/docs/final.plan.md` — which phases are complete, which are next
+- `sdlc/plan/phase{NN}/plan.md` — task-level state for the active phase
+- `~/.claude/state/sdlc-implement.json` — sentinel with active phase plan path
 
-### Clean stop
+This is the same resume path used when a user manually runs `/sdlc implement` in a new session. The branch protocol just automates the transition.
 
-If context exceeds 50% AFTER compaction, the conversation cannot safely continue. Perform a clean stop:
+### Rewind on failure
 
-1. Delete the sentinel file: `rm ~/.claude/state/sdlc-implement.json`
-2. Report to the user:
-
-```
-Context limit reached after compaction. Phase {completed} is done.
-To continue: /clear then /sdlc implement phase {next} to resume.
-```
-
-Do not attempt to continue — the risk of lost context causing incorrect behavior is too high.
+If a phase goes wrong after branching, the per-phase commits provide restore points. The original session (pre-branch) is also intact — you can return to it via `/resume` and inspect what happened before the branch.
 
 ---
 
@@ -348,13 +340,15 @@ Check the phase's `Depends on` field before starting. If the dependency phase is
 
 ---
 
-## 10. Resumption
+## 10. Resume
 
-This prompt is designed to be run repeatedly. It picks up where it left off by reading the current state of the plan files:
+This prompt is designed to be run repeatedly. Each invocation resumes from the current state of the plan files on disk — whether it's a fresh session, a branched session, or a manual restart after a crash:
 
-- If a phase has `Started` tasks and `Open` tasks, follow the Crash Recovery Protocol (Section 5) for Started tasks, then continue from the first `Open` task.
+- If a phase has `Started` tasks and `Open` tasks, follow the Rewind Protocol (Section 5) for Started tasks, then resume from the first `Open` task.
 - If all phases are `Completed` (or `Blocked`), report that the plan is fully implemented (Section 1, idempotency).
 - If the user says "start from phase N" or "redo phase N," obey — but warn if that phase is already marked complete.
+
+The plan files are the source of truth for resume, not conversation history. This is why the Branch Protocol (Section 7) works — a new session with no conversation history can resume correctly because all state is persisted to disk.
 
 ---
 
