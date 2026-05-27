@@ -14,15 +14,15 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 21.1 | Open | | | Write the Prerequisites section: verify plan files exist, detect master plan format (old vs new via `format: "dashboard"` in frontmatter). Include idempotency check — if no Open/Started tasks remain, report "all phases complete" and exit (NFR-005). |
-| 21.2 | Open | | | Write the Sentinel Management section: create `~/.claude/state/sdlc-implement.json` at start with `project_root`, `phase_plan`, `started_at`. Update `phase_plan` on phase advance. Delete on completion, single-phase stop, or clean stop. |
-| 21.3 | Open | | | Write the Execution Loop with HARD RULE callouts: step 3.2a (Started before code — "you MUST update the phase plan to Started before writing any code, creating any file, or running any command for this task") and step 3.2d (Completed after code — "the VERY NEXT action after finishing implementation work is updating the phase plan to Completed"). Include explicit violation list: batching, skipping Started, deferring. |
-| 21.4 | Open | | | Write the two-level monitoring model: phase plan updated per-task (Started/Completed with PST timestamps), master plan updated once per-phase (status to `in_progress`/`complete`, timestamp, commit hash, summary). For old-format plans, fall back to dual-file per-task updates. |
-| 21.5 | Open | | | Write the Phase Isolation section: read only current phase plan, no future-phase reads, no exploratory agents. Next phase plan read only after current phase committed. |
-| 21.6 | Open | | | Write the Context Lifecycle section (multi-phase modes only): `/compact` with focus phrase after each phase commit, re-read `final.plan.md` after compaction to confirm state, 50% threshold for self-compaction, clean stop with user instructions if compact insufficient. |
-| 21.7 | Open | | | Write the Crash Recovery Protocol: detect Started tasks on resume, verify on-disk work (files, functions, tests), mark Completed with `[recovered from interrupted session]` annotation if work exists, re-implement if work not found. Handle Edit-failure variant (work exists but status doesn't). |
-| 21.8 | Open | | | Write format detection logic: old-format path (master plan has task tables, dual-file per-task updates) vs new-format path (master plan has `format: "dashboard"`, phase plan per-task, master plan per-phase). |
-| 21.9 | Open | | | Preserve existing behaviors that don't conflict: blocked task handling, phase dependency checks, never-modify-completed-phases rule, resumption logic, verification commands, commit protocol. Review current `skill/implement.md` and carry forward applicable sections. |
+| 21.1 | Completed | 2026-05-27 01:27 PM | 2026-05-27 01:35 PM | Write the Prerequisites section: verify plan files exist, detect master plan format (old vs new via `format: "dashboard"` in frontmatter). Include idempotency check — if no Open/Started tasks remain, report "all phases complete" and exit (NFR-005). |
+| 21.2 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the Sentinel Management section: create `~/.claude/state/sdlc-implement.json` at start with `project_root`, `phase_plan`, `started_at`. Update `phase_plan` on phase advance. Delete on completion, single-phase stop, or clean stop. |
+| 21.3 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the Execution Loop with HARD RULE callouts: step 3.2a (Started before code — "you MUST update the phase plan to Started before writing any code, creating any file, or running any command for this task") and step 3.2d (Completed after code — "the VERY NEXT action after finishing implementation work is updating the phase plan to Completed"). Include explicit violation list: batching, skipping Started, deferring. |
+| 21.4 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the two-level monitoring model: phase plan updated per-task (Started/Completed with PST timestamps), master plan updated once per-phase (status to `in_progress`/`complete`, timestamp, commit hash, summary). For old-format plans, fall back to dual-file per-task updates. |
+| 21.5 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the Phase Isolation section: read only current phase plan, no future-phase reads, no exploratory agents. Next phase plan read only after current phase committed. |
+| 21.6 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the Context Lifecycle section (multi-phase modes only): `/compact` with focus phrase after each phase commit, re-read `final.plan.md` after compaction to confirm state, 50% threshold for self-compaction, clean stop with user instructions if compact insufficient. |
+| 21.7 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write the Crash Recovery Protocol: detect Started tasks on resume, verify on-disk work (files, functions, tests), mark Completed with `[recovered from interrupted session]` annotation if work exists, re-implement if work not found. Handle Edit-failure variant (work exists but status doesn't). |
+| 21.8 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Write format detection logic: old-format path (master plan has task tables, dual-file per-task updates) vs new-format path (master plan has `format: "dashboard"`, phase plan per-task, master plan per-phase). |
+| 21.9 | Completed | 2026-05-27 01:35 PM | 2026-05-27 01:35 PM | Preserve existing behaviors that don't conflict: blocked task handling, phase dependency checks, never-modify-completed-phases rule, resumption logic, verification commands, commit protocol. Review current `skill/implement.md` and carry forward applicable sections. |
 
 ## Context
 
@@ -177,7 +177,5 @@ The rewritten prompt must follow this structure (from PDR 4.2):
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Rewrote `skill/implement.md` from 173 to 361 lines. Added: Prerequisites with format detection and idempotency check, Sentinel Management lifecycle, Execution Loop with HARD RULE callouts for Started/Completed, Status Update Violations list, Crash Recovery Protocol, Phase Isolation Rules, Context Lifecycle (50% threshold, clean stop), Format Detection (dashboard vs old), and preserved existing behaviors (blocked tasks, dependencies, commit protocol, resumption).
+- **Commit:** `Phase 21: Implement Prompt Rewrite — status enforcement, sentinel management, crash recovery`
