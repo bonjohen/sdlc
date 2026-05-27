@@ -160,6 +160,78 @@ Generate sequentially from Phase 00. Later phases may reference earlier plans bu
 - Do not change tasks from master plan — note gaps in Design Notes instead.
 - Do not write implementation code.
 
+## Master Plan Restructuring
+
+After generating all phase plans, restructure `final.plan.md` into a phase-level dashboard. The master plan was committed by the finalize step, so `git checkout sdlc/docs/final.plan.md` restores the original if this step fails.
+
+### Restructuring Algorithm
+
+1. Re-read `final.plan.md` in full.
+2. Parse all phase sections (`## Phase NN: Title`).
+3. For each phase, extract: phase number (zero-padded) and title.
+4. Build the restructured file:
+
+   **a. Frontmatter:** Preserve existing YAML frontmatter. Add `format: "dashboard"` field.
+
+   **b. Preserve these sections verbatim:**
+   - Title and source references (e.g., `**Source PDR:**`, `**Source User Requirements:**`)
+   - `## Work Queue Instructions` (state transitions, commit protocol)
+   - `## Technology Stack`
+   - `## Coverage Checklist` (if present)
+
+   **c. Replace all phase sections** (each `## Phase NN` block including task tables and summary placeholders) with a single Phase Status table:
+
+   ```markdown
+   ## Phase Status
+
+   | Phase | Title | Plan | Status | Started | Completed | Commit |
+   |-------|-------|------|--------|---------|-----------|--------|
+   | 00 | {title} | [plan](../plan/phase00/plan.md) | not_started | | | |
+   | 01 | {title} | [plan](../plan/phase01/plan.md) | not_started | | | |
+   ```
+
+   One row per phase. All statuses start as `not_started`. The `Plan` column uses relative links from `sdlc/docs/` to `sdlc/plan/`.
+
+   **d. Add Phase Summaries section** at the bottom (before Coverage Checklist if present):
+
+   ```markdown
+   ## Phase Summaries
+
+   _Summaries are appended here as phases complete during `/sdlc implement`._
+   ```
+
+   **e. Remove:** Individual task rows (these now live only in phase plans). Phase goal and dependency lines. Phase summary placeholders.
+
+### Phase Status Table Columns
+
+| Column | Values | Set by |
+|--------|--------|--------|
+| Phase | Zero-padded number (e.g., `00`, `01`) | Expand (once) |
+| Title | Phase title from master plan | Expand (once) |
+| Plan | Relative link: `[plan](../plan/phase{NN}/plan.md)` | Expand (once) |
+| Status | `not_started` / `in_progress` / `complete` / `blocked` | Implement |
+| Started | PST timestamp | Implement (when first task starts) |
+| Completed | PST timestamp | Implement (when phase commits) |
+| Commit | Short hash (7 chars) | Implement (after commit) |
+
+### Phase Summary Format (filled by implement)
+
+```markdown
+### Phase 03 Summary
+
+- **Changes:** Created `app/services/crud.py`, added 12 unit tests in `tests/test_crud.py`.
+- **Commit:** `a1b2c3d` — Phase 03: Service layer with CRUD operations
+```
+
+### Verification
+
+After restructuring, re-read `final.plan.md` and confirm:
+- Frontmatter contains `format: "dashboard"`
+- Phase Status table has exactly one row per phase
+- No individual task rows remain (no `| NN.N |` patterns outside of Coverage Checklist)
+- `## Phase Summaries` section exists
+- Work Queue Instructions, Technology Stack, and Coverage Checklist are preserved
+
 ## After Completion
 
 Stage files produced by this command. Commit: `sdlc {cmd}: {brief description}`. Do not push.

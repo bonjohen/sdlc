@@ -128,20 +128,18 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 03.1 | Open | | | Add the Master Plan Restructuring section to `skill/expand.md`: after generating all phase plans, rewrite `final.plan.md`. Git commit before expand provides the safety net. |
-| 03.2 | Open | | | Define the Phase Status table format: columns Phase, Title, Plan (relative link), Status (`not_started`), Started, Completed, Commit. One row per phase. |
-| 03.3 | Open | | | Define the frontmatter addition: add `format: "dashboard"` to existing YAML frontmatter. |
-| 03.4 | Open | | | Define what is preserved from the pre-expand plan: frontmatter (plus new field), title, source references, work queue instructions, technology stack, coverage checklist. |
-| 03.5 | Open | | | Define what is removed: individual task rows (now in phase plans only). Phase goal and dependency lines remain as context for the status table. |
-| 03.6 | Open | | | Add the `## Phase Summaries` section definition: empty on expand, filled by implement as phases complete. Each summary includes changes description and commit reference. |
-| 03.7 | Open | | | Add verification step: after restructuring, re-read the master plan and confirm the Phase Status table has one row per phase and no individual task rows remain. |
+| 03.1 | Completed | 2026-05-27 01:47 PM | 2026-05-27 01:50 PM | Add the Master Plan Restructuring section to `skill/expand.md`: after generating all phase plans, rewrite `final.plan.md`. Git commit before expand provides the safety net. |
+| 03.2 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Define the Phase Status table format: columns Phase, Title, Plan (relative link), Status (`not_started`), Started, Completed, Commit. One row per phase. |
+| 03.3 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Define the frontmatter addition: add `format: "dashboard"` to existing YAML frontmatter. |
+| 03.4 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Define what is preserved from the pre-expand plan: frontmatter (plus new field), title, source references, work queue instructions, technology stack, coverage checklist. |
+| 03.5 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Define what is removed: individual task rows (now in phase plans only). Phase goal and dependency lines remain as context for the status table. |
+| 03.6 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Add the `## Phase Summaries` section definition: empty on expand, filled by implement as phases complete. Each summary includes changes description and commit reference. |
+| 03.7 | Completed | 2026-05-27 01:50 PM | 2026-05-27 01:50 PM | Add verification step: after restructuring, re-read the master plan and confirm the Phase Status table has one row per phase and no individual task rows remain. |
 
 ### Phase 03 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Modified `skill/expand.md` (166 → 237 lines): added Master Plan Restructuring section with restructuring algorithm, Phase Status table format, frontmatter dashboard field, preserved/removed content rules, Phase Summaries section, and verification step.
+- **Commit:** `Phase 23: Expand Restructuring — dashboard format, Phase Status table, Phase Summaries`
 
 ---
 
