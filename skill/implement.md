@@ -184,10 +184,12 @@ If verification fails:
 ### 3.4 Update Master Plan
 
 **New format (dashboard):** Update the Phase Status table row for this phase:
-- Status -> `complete` (or `blocked` if tasks remain blocked)
-- Started -> PST timestamp (when first task started)
+- Status -> `in_progress` (set when the first task starts; update to `complete` now, or `blocked` if tasks remain blocked)
+- Started -> PST timestamp (when first task started, set at phase start)
 - Completed -> PST timestamp (now)
 - Commit -> short hash (7 chars, filled after commit in step 3.5)
+
+Note: When starting a phase (step 3.1), update the Phase Status table row to: Status -> `in_progress`, Started -> current PST timestamp. This happens once at phase start, not per-task.
 
 Append the Phase Summary to the `## Phase Summaries` section at the bottom of `final.plan.md`.
 
@@ -304,9 +306,11 @@ Do not attempt to continue — the risk of lost context causing incorrect behavi
 
 The master plan contains a Phase Status table — one row per phase — instead of individual task rows.
 
+**Status values:** `not_started` -> `in_progress` -> `complete` (or `blocked`).
+
 **Update pattern:**
-- Phase plan (`phase{NN}/plan.md`): Updated per-task. Every task gets Started/Completed timestamps.
-- Master plan (`final.plan.md`): Updated once per phase. The Phase Status table row gets: status, Started, Completed, Commit. A Phase Summary is appended to `## Phase Summaries`.
+- Phase plan (`phase{NN}/plan.md`): Updated per-task. Every task gets Started/Completed timestamps. Task statuses: `Open`, `Started`, `Completed`, `Blocked`.
+- Master plan (`final.plan.md`): Updated once per phase. The Phase Status table row gets: status (`in_progress` at start, `complete` at end), Started, Completed, Commit. A Phase Summary is appended to `## Phase Summaries`.
 
 ### Old format (no `format` field in frontmatter)
 

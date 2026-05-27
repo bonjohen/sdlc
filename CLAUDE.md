@@ -82,6 +82,15 @@ ln -s "$(pwd)/skill/SKILL.md" ~/.claude/skills/sdlc/SKILL.md
 - **One commit per phase**: Implementation commits after each phase completes (all tasks done, verification green). Never commits partial phases or batches multiple phases.
 - **PST timestamps**: All Started/Completed timestamps use Pacific Standard Time, format `YYYY-MM-DD HH:MM AM/PM`.
 
+## Implement Status Guard Hook
+
+A `PreToolUse` hook at `~/.claude/hooks/pre-implement-status-guard.py` enforces status-before-implementation during `/sdlc implement`. It blocks Edit/Write calls to source files when no task is marked `Started` in the active phase plan.
+
+- **Activated by:** sentinel file at `~/.claude/state/sdlc-implement.json` (created automatically by the implement prompt)
+- **Deactivated by:** deleting the sentinel: `rm ~/.claude/state/sdlc-implement.json`
+- **Behavior:** Blocks source file edits only. Plan file edits always allowed. Fails open on all errors (never blocks legitimate work due to a bug).
+- **Registered in:** `~/.claude/settings.json` (Edit and Write matchers)
+
 ## When Editing Prompts
 
 The prompts in `skill/` are the core product. When modifying them:

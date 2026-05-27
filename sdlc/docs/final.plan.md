@@ -152,18 +152,16 @@ Open  ──>  Started  ──>  Completed
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 04.1 | Open | | | Read the rewritten `implement.md` and verify the old-format code path is complete: if a master plan lacks `format: "dashboard"`, the prompt uses dual-file per-task updates. Verify the new-format code path: phase plan per-task, master plan per-phase. |
-| 04.2 | Open | | | Verify the sentinel lifecycle documentation in the hook script's docstring covers: creation, update on phase advance, deletion on completion, crash orphan behavior, manual cleanup instructions. |
-| 04.3 | Open | | | Verify path consistency across all modified files: sentinel file path (`~/.claude/state/sdlc-implement.json`), plan file patterns (`*/plan/phase*/plan.md`), status values (`Open`/`Started`/`Completed`/`Blocked` in phase plans; `not_started`/`in_progress`/`complete`/`blocked` in master plan), timestamp format (PST). |
-| 04.4 | Open | | | Verify all path references use forward slashes or handle both separators. No file should reference a path using only backslashes. Check: hook script, implement prompt, dispatcher, expand prompt. |
-| 04.5 | Open | | | Update the project `CLAUDE.md` to document the new hook (`pre-implement-status-guard.py`): what it does, where it lives, how to disable it, and its relationship to the sentinel file. |
+| 04.1 | Completed | 2026-05-27 01:52 PM | 2026-05-27 01:53 PM | Read the rewritten `implement.md` and verify the old-format code path is complete: if a master plan lacks `format: "dashboard"`, the prompt uses dual-file per-task updates. Verify the new-format code path: phase plan per-task, master plan per-phase. |
+| 04.2 | Completed | 2026-05-27 01:53 PM | 2026-05-27 01:55 PM | Verify the sentinel lifecycle documentation in the hook script's docstring covers: creation, update on phase advance, deletion on completion, crash orphan behavior, manual cleanup instructions. |
+| 04.3 | Completed | 2026-05-27 01:55 PM | 2026-05-27 01:58 PM | Verify path consistency across all modified files: sentinel file path (`~/.claude/state/sdlc-implement.json`), plan file patterns (`*/plan/phase*/plan.md`), status values (`Open`/`Started`/`Completed`/`Blocked` in phase plans; `not_started`/`in_progress`/`complete`/`blocked` in master plan), timestamp format (PST). |
+| 04.4 | Completed | 2026-05-27 01:58 PM | 2026-05-27 01:59 PM | Verify all path references use forward slashes or handle both separators. No file should reference a path using only backslashes. Check: hook script, implement prompt, dispatcher, expand prompt. |
+| 04.5 | Completed | 2026-05-27 01:59 PM | 2026-05-27 02:02 PM | Update the project `CLAUDE.md` to document the new hook (`pre-implement-status-guard.py`): what it does, where it lives, how to disable it, and its relationship to the sentinel file. |
 
 ### Phase 04 Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Verified format code paths, added sentinel lifecycle to hook docstring, fixed missing status values in implement.md, verified path consistency, added hook documentation to CLAUDE.md.
+- **Commit:** `Phase 24: Integration & Polish — consistency fixes, hook docs, CLAUDE.md update`
 
 ---
 
