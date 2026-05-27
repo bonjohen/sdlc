@@ -14,11 +14,11 @@ status: "open"
 
 | No | Status | Started (PST) | Completed (PST) | Description |
 |----|--------|---------------|------------------|-------------|
-| 22.1 | Open | | | Add `phase NN all` to the Implement Options table in `skill/SKILL.md`: "Start at phase NN, continue through all remaining phases autonomously." Add routing logic: after reading implement.md, inject "Execute in autonomous mode starting at phase NN." |
-| 22.2 | Open | | | Add Plan File Path Parsing section: regex `phase[/\\]?(\d{2})` to extract phase number from path arguments. Map path-alone to single-phase mode, path + continuation language ("and proceed", "and continue", "and remaining", "all remaining") to `phase NN all` mode. |
-| 22.3 | Open | | | Implement Windows backslash normalization in path arguments: normalize `sdlc\plan\phase03\plan.md` to `sdlc/plan/phase03/plan.md` before regex matching. |
-| 22.4 | Open | | | Add context injection block: when routing to `implement.md`, prepend the status monitoring and phase isolation reminders per PDR 4.4. |
-| 22.5 | Open | | | Update the Pipeline Summary's implement section if needed to reflect the four dispatch modes. |
+| 22.1 | Completed | 2026-05-27 01:40 PM | 2026-05-27 01:43 PM | Add `phase NN all` to the Implement Options table in `skill/SKILL.md`: "Start at phase NN, continue through all remaining phases autonomously." Add routing logic: after reading implement.md, inject "Execute in autonomous mode starting at phase NN." |
+| 22.2 | Completed | 2026-05-27 01:43 PM | 2026-05-27 01:43 PM | Add Plan File Path Parsing section: regex `phase[/\\]?(\d{2})` to extract phase number from path arguments. Map path-alone to single-phase mode, path + continuation language ("and proceed", "and continue", "and remaining", "all remaining") to `phase NN all` mode. |
+| 22.3 | Completed | 2026-05-27 01:43 PM | 2026-05-27 01:43 PM | Implement Windows backslash normalization in path arguments: normalize `sdlc\plan\phase03\plan.md` to `sdlc/plan/phase03/plan.md` before regex matching. |
+| 22.4 | Completed | 2026-05-27 01:43 PM | 2026-05-27 01:43 PM | Add context injection block: when routing to `implement.md`, prepend the status monitoring and phase isolation reminders per PDR 4.4. |
+| 22.5 | Completed | 2026-05-27 01:43 PM | 2026-05-27 01:44 PM | Update the Pipeline Summary's implement section if needed to reflect the four dispatch modes. |
 
 ## Context
 
@@ -120,7 +120,5 @@ errors, or context limits."
 
 ## Phase Summary
 
-_To be filled after completion._
-
-- **Changes:** TBD
-- **Commit:** TBD
+- **Changes:** Modified `skill/SKILL.md`: added `phase NN all` dispatch mode to implement options table, added plan file path parsing section with regex extraction and Windows backslash normalization, added context injection block with status monitoring reminders, added routing logic for the new mode, updated Pipeline Summary to note four implement modes.
+- **Commit:** `Phase 22: Dispatcher Enhancements — phase NN all mode, path parsing, context injection`

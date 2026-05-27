@@ -72,11 +72,45 @@ The `implement` subcommand accepts additional options that control execution mod
 | `/sdlc implement` | Execute the next incomplete phase, then stop. |
 | `/sdlc implement all` | Execute all remaining phases end-to-end without pausing between phases. Stop only for destructive actions, errors, or context limits. |
 | `/sdlc implement phase NN` | Execute phase NN specifically (e.g., `/sdlc implement phase 03`). Warn if that phase is already complete. |
+| `/sdlc implement phase NN all` | Start at phase NN, continue through all remaining phases autonomously. |
+
+### Plan file path parsing
+
+If the argument contains a file path rather than a keyword:
+
+1. Normalize backslashes to forward slashes.
+2. Match against regex: `phase[/\\]?(\d{2})` to extract the two-digit phase number as NN.
+3. Dispatch based on context:
+   - Path alone -> `/sdlc implement phase NN` (single-phase)
+   - Path + continuation language -> `/sdlc implement phase NN all`
+
+Continuation language (case-insensitive): "and proceed", "and continue", "all remaining", "and remaining".
+
+| User input | Parsed as |
+|-----------|-----------|
+| `/sdlc implement sdlc/plan/phase03/plan.md` | `/sdlc implement phase 03` |
+| `/sdlc implement sdlc\plan\phase03\plan.md` | `/sdlc implement phase 03` |
+| `/sdlc implement sdlc/plan/phase03/plan.md and proceed with remaining phases` | `/sdlc implement phase 03 all` |
+| `/sdlc implement phase03/plan.md all remaining` | `/sdlc implement phase 03 all` |
+
+If the regex doesn't match, fall back to treating the argument as a keyword (existing behavior). Don't error on unrecognized path formats.
+
+### Context injection
+
+When routing to `skill/implement.md` (any mode), prepend this context block:
+
+> **Status monitoring reminders:**
+> - Update the phase plan file BEFORE starting each task (Started) and IMMEDIATELY after finishing each task (Completed).
+> - The master plan is updated once per phase at completion.
+> - Read only the current phase's plan — do not read future phase plans until the current phase is committed.
+
+### Routing logic
 
 When routing to `skill/implement.md`:
 - For `/sdlc implement` — pass no special instruction. The prompt defaults to single-phase mode.
 - For `/sdlc implement all` — after reading the prompt file, add this instruction: "Execute in autonomous mode. Complete each phase, commit, and immediately proceed to the next phase without waiting for user input."
 - For `/sdlc implement phase NN` — after reading the prompt file, add this instruction: "Execute phase NN specifically, regardless of which phase the plan considers 'next'."
+- For `/sdlc implement phase NN all` — after reading the prompt file, add this instruction: "Execute in autonomous mode starting at phase NN. Complete phase NN, commit, compact, and immediately proceed to phase NN+1. Continue through all remaining phases without waiting for user input. Stop only for destructive actions, errors, or context limits."
 
 ## CLI Commands (run directly in terminal, not through /sdlc)
 
@@ -107,7 +141,7 @@ Conversation path:          Document path:
                     |
                  expand → phase plans
                     |
-               implement → code
+               implement → code (single, all, phase NN, phase NN all)
                     |
                sdlc pull → apply recommended template (CLI, not /sdlc)
 ```
