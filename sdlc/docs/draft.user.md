@@ -1,209 +1,197 @@
-# I2I — From Idea to Implementation — Final User Requirements Document
+# SDLC Implement Hardening — Draft User Requirements Document
+
+## Gaps Identified During Extraction
+
+### Critical
+
+None. Both source documents (`docs/checkpoint.md` and `docs/refactor.md`) describe the problem, root cause, and proposed solution for each requirement area in detail. The primary actor (AI agent executing `/sdlc implement`), the secondary actor (human user monitoring progress), and concrete user flows are all identifiable.
+
+### Notable
+
+- **No discussion of error behavior during status updates.** What happens if the Edit tool fails when updating a plan file mid-task? The agent has started implementation but can't write the "Started" marker. No fallback was discussed.
+- **No discussion of concurrent sessions.** What happens if two Claude Code sessions are running against the same repo and both try to update `final.plan.md`? The documents assume single-session execution.
+- **No discussion of plan file format validation.** The documents assume plan files are well-formed markdown tables. No mention of what happens if a plan file is malformed, has missing columns, or has been manually edited into an unparseable state.
+- **`_standards.md` referenced by the pipeline but does not exist on disk.** Gap in pipeline infrastructure, not in these requirements.
+
+---
 
 ## 1. Product Name
 
-**I2I — From Idea to Implementation**
+**SDLC Implement Hardening** — a set of changes to the SDLC prompt pipeline's `implement.md` and `SKILL.md` that make multi-phase code generation recoverable, observable, and context-efficient.
 
 ## 2. Purpose
 
-I2I shall be a multi-page static website that explains, teaches, and markets a prompt-driven software development life cycle workflow.
+When an AI agent executes `/sdlc implement` across multiple phases, three failure modes repeatedly destroy work:
 
-The website shall present the SDLC workflow as a practical way to move from a software idea to implementation-ready development artifacts. The underlying SDLC project includes prompts and commands for drafting user requirements, drafting or generating a Product Design Review, drafting or generating a phased release plan, finalizing the documents, expanding phase plans, and implementing the work. The prompt inventory identifies the major commands as `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, `expand`, and `implement`. 
+1. **Lost status.** The agent completes tasks but doesn't update plan files. When the session crashes or compacts, there is no record of what was done. The next session restarts from scratch or guesses.
+2. **Context waste.** The agent pre-reads future phase plans and launches exploratory scans before writing code, consuming context window on information it doesn't need yet.
+3. **Context exhaustion.** Multi-phase runs accumulate file reads, narration, and tool output until compaction forces a lossy reset mid-work.
 
-The website shall also serve as a public portfolio project. It shall demonstrate the creator’s ability to design AI-assisted development workflows, organize software projects, create structured handoff documents, and communicate a reusable engineering process.
+These are not theoretical — they were observed during chatbot-factory Phase 02 (14/15 tasks completed with no plan updates, then context lost) and Phase 03 (agent pre-read phases 04–05 and launched a full project explorer before starting work).
+
+The purpose of this work is to harden the implement prompt so that plan files are always current, context is managed deliberately, and crash recovery is possible from plan file state alone.
 
 ## 3. Core Concept
 
-I2I shall explain a simple workflow:
-
-**Idea → User Requirements → Product Design Review → Phased Release Plan → Finalized Documents → Phase Execution Plans → Implementation**
-
-The site shall make the workflow understandable to a software developer, technical reviewer, hiring manager, or potential collaborator.
-
-The site shall focus first on the workflow itself. Personal information about the creator shall be available, but it shall not dominate the initial explanation. Visitors who want more detail about the creator shall be able to find it through deeper pages, links, or portfolio sections.
+The plan file is a state machine. Every task transition (Open → Started → Completed) must be written to disk before the agent does anything else. Git commits are the durable phase boundary. Context resets between phases are deliberate, not accidental. The agent reads only what it needs for the current phase.
 
 ## 4. Primary User Goal
 
-A visitor shall be able to understand what I2I does, why it is useful, how the workflow operates, and how it reflects the creator’s software engineering and AI workflow design skills.
+**As the human operator**, I want to monitor AI agent progress in real-time by reading plan files, intervene when the agent goes off-track, and recover from any session interruption by re-invoking `/sdlc implement` — with the agent picking up exactly where it left off based on plan file state.
+
+**As the AI agent**, the implement prompt must make status updates non-negotiable, prevent context waste from future-phase reads, and manage context lifecycle across phase boundaries so multi-phase runs complete without hitting context limits.
 
 ## 5. Operating Modes
 
-### 5.1 Website Mode
+The implement command operates in three modes (existing) plus one new mode:
 
-I2I shall operate as a public, static, multi-page website.
+| Mode | Invocation | Behavior |
+|------|-----------|----------|
+| Single phase | `/sdlc implement` | Execute the next incomplete phase, then stop. |
+| Specific phase | `/sdlc implement phase NN` | Execute phase NN specifically. |
+| All remaining | `/sdlc implement all` | Execute all remaining phases end-to-end. |
+| **Start-at phase, continue all** | **`/sdlc implement phase NN all`** | **Start at phase NN, continue through remaining phases autonomously.** |
 
-### 5.2 Portfolio Mode
-
-I2I shall operate as a personal portfolio artifact that can be shared with hiring managers, clients, collaborators, or technical peers.
-
-### 5.3 Educational Mode
-
-I2I shall operate as an educational guide that teaches how the SDLC workflow works and why each stage exists.
-
-### 5.4 Marketing Mode
-
-I2I shall operate as a marketing page for the workflow, emphasizing usefulness, clarity, repeatability, and human-in-the-loop AI-assisted software development.
+Additionally, the dispatcher must accept plan file paths as arguments:
+- `/sdlc implement sdlc/plan/phase03/plan.md` → parsed as `/sdlc implement phase 03`
+- `/sdlc implement sdlc\plan\phase03\plan.md and proceed with remaining phases` → parsed as `/sdlc implement phase 03 all`
 
 ## 6. Primary User Flows
 
-### 6.1 First-Time Visitor Understands the Project
+### Flow 1: Single-phase execution with status tracking
 
-1. Visitor arrives at the homepage.
-2. Visitor sees the name **I2I — From Idea to Implementation**.
-3. Visitor reads a concise explanation of the project.
-4. Visitor sees a visual workflow from idea to implementation.
-5. Visitor understands that I2I is an automated SDLC workflow supported by structured prompts and generated artifacts.
-6. Visitor can choose to learn the workflow, review examples, or learn more about the creator.
+1. User invokes `/sdlc implement`.
+2. Agent reads `final.plan.md`, identifies next incomplete phase.
+3. Agent reads `phase{NN}/plan.md` for the target phase.
+4. For each task in the phase:
+   a. Agent edits BOTH plan files: Status → `Started`, records PST timestamp. **This happens before any implementation work.**
+   b. Agent implements the task (writes code, creates files, runs commands).
+   c. Agent edits BOTH plan files: Status → `Completed`, records PST timestamp. **This happens immediately after implementation, before moving to next task.**
+5. Agent runs validation (tests, lint).
+6. Agent writes Phase Summary block in `final.plan.md`.
+7. Agent commits all changes for the phase.
 
-### 6.2 Developer Learns the Workflow
+### Flow 2: Multi-phase execution with context lifecycle
 
-1. Developer opens the workflow page.
-2. Developer sees the SDLC stages in order.
-3. Developer sees what each stage consumes and produces.
-4. Developer understands the difference between conversation-driven drafting, generated design/planning, finalization, expansion, and implementation.
-5. Developer can decide whether the workflow could help structure their own AI-assisted development process.
+1. User invokes `/sdlc implement all` or `/sdlc implement phase NN all`.
+2. Agent reads bootstrap data: `CLAUDE.md`, project config, `final.plan.md`, `MEMORY.md`.
+3. Agent identifies the first target phase.
+4. Agent reads ONLY that phase's `plan.md` and the source files listed in its Context section.
+5. Agent executes all tasks in the phase (Flow 1, steps 4–7).
+6. After phase commit, agent runs `/compact "phase NN complete, starting phase NN+1"` to shed accumulated context.
+7. Agent re-reads `final.plan.md` to confirm phase completion and identify next phase.
+8. If next phase exists, agent reads its `plan.md` and continues (step 4).
+9. If no more phases, agent reports completion summary and stops.
+10. If context exceeds 50% after compaction, agent stops and tells user: "Run `/clear` then `/sdlc implement` to continue from phase {next}."
 
-### 6.3 Visitor Reviews the Project as Portfolio Evidence
+### Flow 3: Crash recovery
 
-1. Visitor opens a case study or portfolio page.
-2. Visitor sees why the project demonstrates practical engineering skill.
-3. Visitor sees the creator’s role in designing the workflow.
-4. Visitor sees links to GitHub and related public project material.
-5. Visitor can determine whether the creator has relevant AI, SDLC, documentation, workflow design, and software planning skills.
-
-### 6.4 Visitor Learns How to Use the SDLC Pipeline
-
-1. Visitor opens a usage or getting-started page.
-2. Visitor sees the command sequence for the normal workflow.
-3. Visitor sees the fast path and mixed path options.
-4. Visitor understands that user requirements start from conversation, while later PDR and plan stages may be drafted from conversation or generated from prior artifacts. The source instructions describe the conversation path, fast path, and mixed path as supported ways to move through the SDLC pipeline. 
-5. Visitor understands where final documents and phase plans are produced.
-
-### 6.5 Visitor Reviews Detailed Project Material
-
-1. Visitor opens a deeper documentation or artifact page.
-2. Visitor can inspect the public project materials.
-3. Visitor can view examples of prompts, generated documents, or workflow artifacts.
-4. Visitor can follow links to GitHub.
-5. Visitor can optionally follow links to the creator’s broader portfolio or website.
+1. Session is interrupted (crash, compaction, user abort) mid-phase.
+2. User starts new session, invokes `/sdlc implement`.
+3. Agent reads both plan files. Finds tasks marked `Started` (in-progress when session died).
+4. For each `Started` task: agent verifies work exists on disk (checks files, functions, tests described by the task).
+   - If work exists: mark `Completed` with estimated timestamp and note `[recovered from interrupted session]`.
+   - If work does not exist: leave as `Started`, redo the task.
+5. For each `Open` task after a `Started`/`Completed` task: agent checks for partial work on disk.
+   - If partial work exists: mark `Started`, complete it.
+   - If no work exists: proceed normally.
+6. Agent never marks a task `Completed` without verifying its work exists.
 
 ## 7. Functional Requirements
 
-| ID     | Requirement                                                                                                                                                                                         |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-001 | I2I shall be a multi-page static website.                                                                                                                                                           |
-| FR-002 | I2I shall be publishable through GitHub Pages.                                                                                                                                                      |
-| FR-003 | I2I shall eventually support hosting under `johnboen.com`.                                                                                                                                          |
-| FR-004 | I2I shall link to the creator’s GitHub account, `bonjohen`.                                                                                                                                         |
-| FR-005 | I2I shall allow the repository name to remain unspecified until selected later.                                                                                                                     |
-| FR-006 | I2I shall explain the SDLC workflow from idea to implementation.                                                                                                                                    |
-| FR-007 | I2I shall include a clear homepage that explains the project name, purpose, and value.                                                                                                              |
-| FR-008 | I2I shall include a visual representation of the workflow.                                                                                                                                          |
-| FR-009 | I2I shall include a workflow page explaining each major SDLC stage.                                                                                                                                 |
-| FR-010 | I2I shall explain `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, `expand`, and `implement`.                                                                            |
-| FR-011 | I2I shall explain the normal conversation-driven workflow.                                                                                                                                          |
-| FR-012 | I2I shall explain the fast path.                                                                                                                                                                    |
-| FR-013 | I2I shall explain the mixed path.                                                                                                                                                                   |
-| FR-014 | I2I shall explain that `finalize` converts draft documents into final user requirements, final PDR, and final plan documents.                                                                       |
-| FR-015 | I2I shall explain that `expand` creates one self-contained phase execution plan per phase after finalization. The corrected expand prompt specifies output files at `sdlc/plan/phase{NN}/plan.md`.  |
-| FR-016 | I2I shall explain that `implement` executes phase plans, updates task status, verifies work, writes summaries, and commits completed phases.                                                        |
-| FR-017 | I2I shall include an educational section explaining why each SDLC stage exists.                                                                                                                     |
-| FR-018 | I2I shall include a marketing section explaining the value of the workflow.                                                                                                                         |
-| FR-019 | I2I shall include a portfolio or case-study section showing why the project demonstrates the creator’s engineering ability.                                                                         |
-| FR-020 | I2I shall keep the homepage and primary workflow explanation focused on the workflow rather than on the creator.                                                                                    |
-| FR-021 | I2I shall expose more information about the creator only when visitors look for more detailed information.                                                                                          |
-| FR-022 | I2I shall include public examples or excerpts from the project artifacts.                                                                                                                           |
-| FR-023 | I2I shall treat all project materials as safe for public exposure.                                                                                                                                  |
-| FR-024 | I2I shall support both manually authored website content and content derived from project markdown files.                                                                                           |
-| FR-025 | I2I shall avoid exaggerated claims and keep the marketing tone credible, technical, and practical.                                                                                                  |
-| FR-026 | I2I shall leave room for a future interactive demo without requiring one in the initial version.                                                                                                    |
-| FR-027 | I2I shall be understandable without requiring the visitor to read the source repository first.                                                                                                      |
+### Status Update Enforcement
 
-## 8. Initial Configuration
+**FR-1:** The agent must update task status in BOTH `final.plan.md` and `phase{NN}/plan.md` to `Started` with a PST timestamp BEFORE doing any implementation work for that task. No code, file creation, or command execution for the task may occur before both plan files show `Started`.
 
-| Item                  | Initial Requirement                                                 |
-| --------------------- | ------------------------------------------------------------------- |
-| Site name             | `I2I — From Idea to Implementation`                                 |
-| Site type             | Multi-page static website                                           |
-| Publishing target     | GitHub Pages                                                        |
-| GitHub account        | `bonjohen`                                                          |
-| Repository name       | To be selected later                                                |
-| Future domain         | `johnboen.com`                                                      |
-| Content exposure      | Entire project may be publicly exposed                              |
-| Initial interactivity | Static pages only; future interactive demo allowed but not required |
-| Primary positioning   | Workflow first; creator information available in deeper pages       |
-| Tone                  | Educational, technical, credible, and practical                     |
+**FR-2:** The agent must update task status in BOTH plan files to `Completed` with a PST timestamp IMMEDIATELY after finishing the task's implementation work. The update must be the very next action — not deferred to after verification, not batched with other tasks.
 
-## 9. Non-Goals
+**FR-3:** When updating both plan files, the agent must edit the phase plan first, then the master plan, as two consecutive Edit tool calls with no interleaved work.
 
-The initial I2I website shall not:
+**FR-4:** The following are defined status update violations that the implement prompt must explicitly prohibit:
+- Batching updates (writing code for multiple tasks before updating any plan file)
+- Skipping the `Started` state (going directly from `Open` to `Completed`)
+- Updating one plan file but not the other
+- Deferring updates to "after verification"
 
-1. Execute the SDLC workflow from the browser.
-2. Provide a hosted SaaS version of the workflow.
-3. Require user accounts.
-4. Store visitor projects.
-5. Accept visitor uploads.
-6. Run coding agents.
-7. Modify repositories.
-8. Require a backend service.
-9. Require an interactive demo.
-10. Make the creator the dominant focus of the homepage.
-11. Present AI-assisted SDLC as fully autonomous software development without human review.
-12. Depend on the final GitHub repository name being known before design begins.
+### Phase Isolation
 
-## 10. Privacy and Storage Expectations
+**FR-5:** During implementation, the agent must read ONLY the current phase's `plan.md`. It must not read future phase plans, the master plan's future phase sections, or any file not directly needed for the current task.
 
-I2I shall be a public static website.
+**FR-6:** In multi-phase mode, the agent must read the next phase's `plan.md` ONLY AFTER committing the current phase. The sequence is: implement → commit → context reset → read next phase.
 
-The initial version shall not collect visitor project ideas, uploaded files, source code, private documents, or personal information.
+**FR-7:** The agent must not launch exploratory agents (Explore subagent, project scanners) to "understand the project" before implementation begins. The phase plan's Context section provides all necessary context.
 
-The project materials themselves may be public. The website may expose prompts, documentation, examples, and generated artifacts from this SDLC project.
+### Context Lifecycle
 
-If analytics are added later, they should be minimal and disclosed.
+**FR-8:** After committing each phase in multi-phase mode, the agent must run `/compact` with an aggressive focus phrase (e.g., "phase NN complete, starting phase NN+1, preserve only: branch state, plan file path, next phase number") to shed accumulated context.
 
-## 11. Acceptance Criteria
+**FR-9:** After compaction, the agent must re-read `final.plan.md` to confirm phase completion and identify the next phase before proceeding.
 
-| ID     | Acceptance Criterion                                                                                                                              |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AC-001 | The site can be deployed as static pages through GitHub Pages.                                                                                    |
-| AC-002 | The site can later be hosted under `johnboen.com`.                                                                                                |
-| AC-003 | The homepage clearly identifies the project as **I2I — From Idea to Implementation**.                                                             |
-| AC-004 | A first-time visitor can understand that I2I turns software ideas into implementation-ready SDLC artifacts.                                       |
-| AC-005 | The site includes a clear visual workflow from idea to implementation.                                                                            |
-| AC-006 | The site explains all major SDLC commands: `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, `expand`, and `implement`. |
-| AC-007 | The site explains the conversation path, fast path, and mixed path.                                                                               |
-| AC-008 | The site explains the role of final user requirements, final PDR, final plan, and per-phase execution plans.                                      |
-| AC-009 | The site includes educational content explaining why the workflow is structured in stages.                                                        |
-| AC-010 | The site includes marketing content explaining why the workflow is useful.                                                                        |
-| AC-011 | The site includes a portfolio or case-study section.                                                                                              |
-| AC-012 | The site links to `bonjohen` on GitHub.                                                                                                           |
-| AC-013 | The site allows the repository name to be filled in later without redesigning the requirements.                                                   |
-| AC-014 | The homepage focuses primarily on the workflow.                                                                                                   |
-| AC-015 | More detailed creator information is available through deeper navigation or links.                                                                |
-| AC-016 | The site does not require a backend service for the initial release.                                                                              |
-| AC-017 | The site does not require an interactive demo for the initial release.                                                                            |
-| AC-018 | The site presents the workflow as human-in-the-loop and does not overclaim full automation.                                                       |
-| AC-019 | A technical reviewer can understand the project’s value without opening the GitHub repository.                                                    |
-| AC-020 | A developer can determine how they would begin using the SDLC workflow after reading the site.                                                    |
+**FR-10:** If context usage exceeds 50% at any point during multi-phase execution, the agent must self-compact before continuing. The 50% threshold is lower than the global 65% rule because multi-phase runs accumulate faster.
 
-## 12. Concerns for Physical Design
+**FR-11:** If context remains above 50% after compaction, the agent must stop and instruct the user to `/clear` and re-invoke `/sdlc implement`.
 
-1. **Static site structure:** FR-001 and FR-002 require a multi-page static website deployable to GitHub Pages. The PDR should choose the specific static site approach and directory structure.
+### Crash Recovery
 
-2. **GitHub Pages deployment:** FR-002 requires publishing through GitHub Pages. The PDR should decide whether deployment is manual, GitHub Actions based, or handled by the selected static site framework.
+**FR-12:** When resuming a phase that was interrupted, the agent must read both plan files and verify the on-disk state of every `Started` task before continuing. Tasks with verified work are marked `Completed` with recovery notes. Tasks without verified work are re-implemented.
 
-3. **Future custom domain:** FR-003 requires eventual hosting under `johnboen.com`. The PDR should leave room for custom-domain configuration without blocking the first deployment.
+**FR-13:** The agent must never mark a task `Completed` without verifying its described work exists on disk (files, functions, tests).
 
-4. **Workflow diagram:** FR-008 requires a visual workflow. The PDR should choose an initial diagram implementation and allow later edits.
+### Dispatcher Enhancements
 
-5. **Content source strategy:** FR-024 allows both manually authored content and content derived from markdown files. The PDR should decide which pages are manually written and which, if any, are generated from source markdown.
+**FR-14:** The `SKILL.md` dispatcher must support a fourth implement mode: `/sdlc implement phase NN all` (start at phase NN, continue through all remaining phases).
 
-6. **Public artifact exposure:** FR-022 and FR-023 allow the project artifacts to be public. The PDR should decide how to expose those artifacts cleanly without overwhelming the main educational flow.
+**FR-15:** The dispatcher must parse plan file paths in arguments (e.g., `sdlc/plan/phase03/plan.md`) and extract the phase number. Path alone maps to single-phase mode; path with continuation language ("and proceed", "and continue", "all remaining") maps to start-at-all mode.
 
-7. **Workflow-first positioning:** FR-020 and FR-021 require the site to focus on the workflow first and expose creator details only for visitors who want more information. The PDR should define navigation and page hierarchy accordingly.
+**FR-16:** When routing to `implement.md`, the dispatcher must inject context about real-time status monitoring and phase isolation rules, ensuring these instructions arrive even in fresh contexts.
 
-8. **Marketing tone:** FR-018 and FR-025 require useful marketing without hype. The PDR should define page copy style, section headings, and claim boundaries.
+### Plan File Structure
 
-9. **Repository link placement:** FR-004 and FR-005 require linking to `bonjohen` while leaving the repo name undecided. The PDR should define placeholders or configuration for repository links.
+**FR-17:** `final.plan.md` must serve as the external state ledger containing, for each phase: Phase ID, phase plan path, status (not_started | in_progress | complete | blocked), started timestamp, completed timestamp, summary, validation results, commit hash, and next phase pointer.
 
-10. **Future interactivity:** FR-026 allows a later interactive demo. The PDR should avoid design choices that make future interactivity difficult, but the initial release should remain static.
+**FR-18:** Each `phase{NN}/plan.md` must contain: phase goal, startup memory file path, task list, acceptance criteria, files expected to change, validation commands, and completion update instructions.
+
+**FR-19:** Each phase may include a `phase-N-startup-memory.md` containing only the focused context needed for that phase — not the full project context.
+
+## 8. Non-Goals
+
+- **Changing the plan file format.** Markdown tables, status values (`Open`, `Started`, `Completed`, `Blocked`), and PST timestamp format remain as-is.
+- **Changing the one-commit-per-phase rule.** Each phase still produces exactly one commit.
+- **Changing the task execution order.** Tasks within a phase are still executed top-to-bottom.
+- **Modifying other pipeline prompts.** `draft-user`, `draft-pdr`, `draft-plan`, `gen-pdr`, `gen-plan`, `finalize`, and `expand` are not affected.
+- **Automated `/clear` or `/rewind`.** The agent cannot invoke these programmatically in interactive mode. Context management uses `/compact` with fallback to instructing the user to `/clear`.
+- **Agent SDK integration.** The checkpoint research (`docs/checkpoint.md`) explored SDK-level file checkpointing, but this work targets interactive Claude Code mode only. SDK integration is a separate future effort.
+- **Concurrent session support.** Single-session execution is assumed.
+
+## 9. Privacy and Storage Expectations
+
+No new data storage. All state is written to existing plan file locations (`sdlc/docs/final.plan.md`, `sdlc/plan/phase{NN}/plan.md`) and committed to the project's Git repository. No external services, APIs, or telemetry are involved.
+
+## 10. Acceptance Criteria
+
+- [ ] **AC-1:** During a single-phase run, every task shows a distinct Edit tool call updating both plan files BEFORE the task's first implementation action and AFTER the task's last implementation action.
+- [ ] **AC-2:** If a session is interrupted mid-phase and resumed with `/sdlc implement`, the agent correctly identifies `Started` tasks, verifies on-disk state, and continues without re-doing completed work.
+- [ ] **AC-3:** During a 3+ phase "all" run, context usage drops measurably after each phase transition (visible in compact behavior). Phase N+1 starts with only bootstrap data plus phase N+1 plan in context.
+- [ ] **AC-4:** The agent never reads a future phase's `plan.md` before committing the current phase.
+- [ ] **AC-5:** The agent never launches an Explore subagent or project-wide scan before beginning implementation of the current phase.
+- [ ] **AC-6:** `/sdlc implement phase 03 all` is correctly dispatched as "start at phase 03, continue all remaining."
+- [ ] **AC-7:** `/sdlc implement sdlc/plan/phase03/plan.md` is correctly parsed and dispatched as phase 03.
+- [ ] **AC-8:** The user can observe real-time task progress by reading either plan file during agent execution.
+- [ ] **AC-9:** If context exceeds 50% mid-phase, the agent self-compacts before continuing.
+- [ ] **AC-10:** If context remains above 50% after compaction, the agent stops cleanly and instructs the user to `/clear` and re-invoke.
+
+## 11. Concerns for Physical Design
+
+1. **FR-1/FR-2 rely on prompt compliance, not enforcement.** The HARD RULE callouts and violation definitions strengthen the instruction, but there is no runtime mechanism to verify the agent actually updated plan files before writing code. The PDR should consider whether a hook-based enforcement is feasible (e.g., a `PreToolUse` hook that checks plan file timestamps).
+
+2. **FR-8 depends on `/compact` effectiveness.** The quality of context shedding after `/compact` varies — the compaction model may retain more phase N context than desired. The PDR should define what "successful compaction" looks like and whether the 50% threshold needs tuning based on observed behavior.
+
+3. **FR-3 specifies edit order (phase plan first, then master plan).** If the agent crashes between the two edits, the phase plan shows `Started` but the master plan still shows `Open`. The recovery protocol (FR-12) handles this, but the PDR should verify that partial-update states are correctly handled.
+
+4. **FR-17 expands `final.plan.md` with new fields** (commit hash, validation results, next phase pointer). The existing plan format may not have these columns. The PDR must define whether this is a format migration or whether these fields are added only to newly generated plans.
+
+5. **FR-19 introduces `startup-memory.md` per phase.** This is a new artifact not currently produced by `expand.md`. The PDR must decide whether `expand.md` generates these files or whether `implement.md` creates them on-the-fly from the phase plan's Context section.
+
+6. **The two-file synchronization (FR-3) was identified as the primary friction source** in the refactor analysis. Option A (single-file authority during execution, sync at phase boundary) was considered and rejected because the user monitors both files in real-time. The PDR should validate this decision — if monitoring only happens via `final.plan.md`, single-file authority during execution would halve the per-task update cost.
+
+7. **FR-15 path parsing must handle both forward and backslashes** on Windows. The dispatcher receives user input that may use either separator style. The PDR should specify normalization behavior.
