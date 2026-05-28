@@ -95,7 +95,9 @@ When you are executing a phase:
 
 Unnecessary lookups waste context window, delay execution, and signal that the phase plan's Context section was ignored. Every Read/Grep/Glob/Agent call that retrieves information already available is a defect in execution, not diligence.
 
-## Implement Hooks
+## Hooks & Skills
+
+### SDLC-Specific Hooks
 
 Two hooks enforce the `/sdlc implement` workflow:
 
@@ -106,6 +108,33 @@ Two hooks enforce the `/sdlc implement` workflow:
 - **Activated by:** sentinel file at `~/.claude/state/sdlc-implement.json` (created by the checkpoint hook)
 - **Deactivated by:** deleting the sentinel: `rm ~/.claude/state/sdlc-implement.json`
 - **Registered in:** `~/.claude/settings.json`
+
+### Global Hooks That Affect This Project
+
+These hooks fire on every project. Documented in `~/.claude/CLAUDE.md`, registered in `~/.claude/settings.json`:
+
+- **`PreToolUse(Bash)` — `ANTHROPIC_API_KEY` guard.** Blocks bash calls if `ANTHROPIC_API_KEY` is set. Enforces OAuth-only credit routing.
+- **`PreToolUse(Bash)` — `git push` guard.** Blocks `git push` unless a single-use sentinel at `~/.claude/state/push-authorized.flag` exists. Each push needs fresh authorization.
+- **`SessionStart` — status banner.** Prints branch/ahead-behind/effort level/guardrail reminders at session start.
+- **`UserPromptSubmit` — plan-mode reminder.** Fires on design-shaped prompts (design doc, PDR, Stage 1/2), injecting workflow reminders. Always exits 0.
+
+### Installed Skills (`~/.claude/skills/`)
+
+This project defines `/sdlc`. The remaining skills are global utilities available across all projects.
+
+| Skill | Source | Description |
+|-------|--------|-------------|
+| `/sdlc` | This project (`skill/SKILL.md` → symlinked) | SDLC document pipeline dispatcher. Routes subcommands to prompt files. |
+| `/phase` | `~/.claude/skills/phase/` | Execute one phase of a plan (Stage 4 loop). Used by `/sdlc implement`. |
+| `/push` | `~/.claude/skills/push/` | Commit, push, monitor GitHub Actions, fix build failures. Handles push sentinel. |
+| `/preflight` | `~/.claude/skills/preflight/` | Run CI checks locally before pushing. |
+| `/review` | `~/.claude/skills/review/` | Structured codebase review (security, dead code, consistency, drift). |
+| `/tidy` | `~/.claude/skills/tidy/` | Repo housekeeping: archive, clean, normalize, verify consistency. |
+| `/lessons` | `~/.claude/skills/lessons/` | Discover, write, audit, or repair lessons-learned documents. |
+| `/external-lesson` | `~/.claude/skills/external-lesson/` | Research a topic via web and create a lesson markdown file. |
+| `/file-pipeline` | `~/.claude/skills/file-pipeline/` | Process inbound lesson files through a state-machine pipeline. |
+| `/diagram` | `~/.claude/skills/diagram/` | Generate architecture diagrams from knowledge graph presets. |
+| `/healthcheck-machine` | `~/.claude/skills/healthcheck-machine/` | Run health scripts for machine classes (sparkdgx, macmini, etc.). |
 
 ## When Editing Prompts
 
